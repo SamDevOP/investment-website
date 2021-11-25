@@ -26,6 +26,7 @@ app.config["SECRET_KEY"] = 'TPmi4aLWRbyVq8zu9v82dWYW1AHEKSpdsr'
 def upload_dashboard():
     if request.method== "POST":
         checking=request.form.get('terms_conditions')
+        keep=request.form.get('keep')
 
         if checking == 'on':
             mail=request.form["mail"]
@@ -43,14 +44,20 @@ def upload_dashboard():
                     #pass
 
         #log in
-        phonenum=request.form["phonenum"]
-        passcode=request.form["passcode"]
-        #login_user(phonenum,passcode)
+        elif keep=='on' or keep=='off':    
+            phonenum=request.form["phonenum"]
+            passcode=request.form["passcode"]
+            login_user()
+            for each in login_user.records:
+                #print(each[1],each[2])
+                if phonenum==each[0] and passcode==each[2]:
+                    #print(phonenum,passcode)
+                    return redirect('/dashboard')
+                else:
+                    flash("Number or Password not correct!")
+        #print(passcode,phonenum)
+        #login_user()
         
-        login_user(phonenum,passcode)
-        
-            
-  
 
         
         #email = request.form["gall"]

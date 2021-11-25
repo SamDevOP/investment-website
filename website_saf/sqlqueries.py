@@ -13,16 +13,14 @@ def create_user(data):
     con.commit()
     #pass
 
-def login_user(phonenum,passcode):
+def login_user():
     con = sql3.connect(non_normalized_db_filename,check_same_thread=False)
     cursor = con.cursor()
-    records = cursor.fetchall()
-    for each in records:
-        if phonenum==each[2] and passcode==each[3]:
-            print(passcode,phonenum)
-            return redirect('/dashboard')
-        else:
-            flash("Number or Password not correct!")
+    query = """SELECT * from users"""
+    cursor.execute(query)
+    login_user.records = cursor.fetchall()
+    
+    
     #connection.execute('INSERT INTO StudentExamScores VALUES (?,?,?,?)', data)
     #pass
 
