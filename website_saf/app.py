@@ -6,7 +6,7 @@ from flask.globals import current_app
 from flask.helpers import send_from_directory
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
-#from sqlqueries import *
+from sqlqueries import *
 
 
 UPLOAD_FOLDER = 'docs/'
@@ -30,6 +30,7 @@ def upload_dashboard():
         if checking == 'on':
             mail=request.form["mail"]
             phone=request.form["phone"]
+            #add a fetch all to chech for emails and phone duplication
             root_pass=request.form["root_pass"]
             repeat_pass=request.form["repeat_pass"]
             if root_pass != repeat_pass:
@@ -38,14 +39,18 @@ def upload_dashboard():
                 if len(root_pass)<8:
                     flash("Your Password shoould be more than 8 Characters")
                 else:
-                    #create_user((mail,phone,root_pass))
-                    pass
+                    create_user((mail,phone,root_pass))
+                    #pass
 
-        else:
-            phonenum=request.form["phonenum"]
-            passcode=request.form["passcode"]
-            print(passcode,phonenum)
-            return redirect('/dashboard')
+        #log in
+        phonenum=request.form["phonenum"]
+        passcode=request.form["passcode"]
+        #login_user(phonenum,passcode)
+        
+        login_user(phonenum,passcode)
+        
+            
+  
 
         
         #email = request.form["gall"]
