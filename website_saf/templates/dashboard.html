@@ -13,7 +13,7 @@
           <div class="card border-0 shadow rounded-3 my-5">
             <div class="card-body p-4 p-sm-5">
               <h5 class="card-title text-center mb-5 fw-light fs-5">Fund your account</h5>
-              <form>
+              <form action = "http://localhost:5000/dashboard" method = "POST" enctype = "multipart/form-data">
                 <!-- <div class="form-floating mb-3">
                   <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com">
                   <label for="floatingInput">Email address</label>
@@ -30,10 +30,10 @@
                       <option value="2000">2000</option>
                     </select> 
                   </div>
-                <!-- <div class="form-floating mb-3">
-                  <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
-                  <label for="floatingPassword">Password</label>
-                </div> -->
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="floatingPassword" placeholder="Enter amount you want to invest i.e. 330,2459...">
+                  <label for="floatingPassword">Enter amount</label>
+                </div>
   
                 <!-- <div class="form-check mb-3">
                   <input class="form-check-input" type="checkbox" value="" id="rememberPasswordCheck">
@@ -44,6 +44,13 @@
                 <div class="d-grid">
                   <button class="btn btn-primary btn-login text-uppercase fw-bold" type="submit">Send cash</button>
                 </div>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        {{ message }}
+                    {% endfor %}
+                {% endif %}
+                {% endwith %}
                 <!-- <hr class="my-4"> -->
                 <!-- <div class="d-grid mb-2">
                   <button class="btn btn-google btn-login text-uppercase fw-bold" type="submit">
@@ -61,16 +68,16 @@
           <div class="card border-0 shadow rounded-3 my-5">
             <div class="card-body p-4 p-sm-5">
               <h5 class="card-title text-center mb-5 fw-light fs-5">Withdraw cash</h5>
-              <form>
+              <form action = "http://localhost:5000/dashboard" method = "POST" enctype = "multipart/form-data">
                 <!-- <div class="form-floating mb-3">
                   <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com">
                   <label for="floatingInput">Email address</label>
                 </div> -->
-                <label for="fund_cash" class="form-label">Choose amount to Withdraw</label>
+                <label for="withdraw_cash" class="form-label">Choose amount to Withdraw</label>
                 <div class="form-floating mb-3">
                     <!-- <label for="fund_cash">Choose amount to invest</label> -->
                     <!-- <label for="fund_cash" class="form-label">Choose amount to invest</label> -->
-                      <select class="form-select" id="funding_cash" name="fund_cash">
+                      <select class="form-select" id="withdraw_cash" name="withdraw_cash">
                       <option value="100">100</option>
                       <option value="200">200</option>
                       <option value="500">500</option>
@@ -92,6 +99,13 @@
                 <div class="d-grid">
                   <button class="btn btn-primary btn-login text-uppercase fw-bold" type="submit">Withdraw</button>
                 </div>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        {{ message }}
+                    {% endfor %}
+                {% endif %}
+                {% endwith %}
                 <!-- <hr class="my-4"> -->
                 <!-- <div class="d-grid mb-2">
                   <button class="btn btn-google btn-login text-uppercase fw-bold" type="submit">

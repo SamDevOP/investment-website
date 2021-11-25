@@ -7,6 +7,7 @@ from flask.helpers import send_from_directory
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 from sqlqueries import *
+from mpesa_views import *
 
 
 UPLOAD_FOLDER = 'docs/'
@@ -52,6 +53,7 @@ def upload_dashboard():
                 #print(each[1],each[2])
                 if phonenum==each[0] and passcode==each[2]:
                     #print(phonenum,passcode)
+                    session['response']=each[0]
                     return redirect('/dashboard')
                 else:
                     flash("Number or Password not correct!")
@@ -88,8 +90,19 @@ def upload_dashboard():
 #     return send_from_directory(directory=downloads,filename='encrypted.txt', as_attachment=True)
 
 
-@app.route('/dashboard')
+@app.route('/dashboard',methods =["GET","POST"])
 def dashboard():
+    if request.method== "POST":
+        fund_cash=request.form.get('fund_cash')
+        print(fund_cash)
+        phonenumber=254798766620 #session['response']
+        my_c2b=C2B()
+        my_c2b.simulate(shortcode=600988,command_id='CustomerPayBillOnline',amount=fund_cash,msisdn=phonenumber)
+        #return render_template('dashboard.html')
+        flash("Your account has been credited")
+
+
+
     return render_template('dashboard.html')
     #downloads = os.path.join(current_app.root_path,'')
     #return send_from_directory(directory=downloads,filename='decrypted.txt', as_attachment=True)
