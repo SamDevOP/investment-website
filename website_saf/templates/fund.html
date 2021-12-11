@@ -81,7 +81,7 @@
                 <div class="position-sticky">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                          <a class="nav-link active" aria-current="page" href="#">
+                          <a class="nav-link active" aria-current="page" href="{{url_for('dashboard')}}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                             <span class="ml-2">Dashboard</span>
                           </a>
@@ -139,17 +139,20 @@
             </nav>
             <main class="col-md-9 ml-sm-auto col-lg-10 px-md-4 py-4">
                 <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item">Home</li>
+                    <!-- <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Overview</li>
-                    </ol>
+                    </ol> -->
                 </nav>
-                <h1 class="h2">Dashboard</h1>
-                <!-- <p>This is the homepage of a simple admin interface which is part of a tutorial written on Themesberg</p> -->
+                <!-- <h1 class="h2">Dashboard</h1>
+                <p>This is the homepage of a simple admin interface which is part of a tutorial written on Themesberg</p> -->
                 <div class="row my-4">
-                    <div class="col-12 col-md-6 col-lg-3 mb-4 mb-lg-0">
+                    {% block content %}
+                    
+                    {% endblock %}
+                    <!--<div class="col-12 col-md-6 col-lg-3 mb-4 mb-lg-0">
                         <div class="card">
-                            <h5 class="card-header">Amount Invested</h5>
+                            <h5 class="card-header">Customers</h5>
                             <div class="card-body">
                               <h5 class="card-title">345k</h5>
                               <p class="card-text">Feb 1 - Apr 1, United States</p>
@@ -157,9 +160,9 @@
                             </div>
                           </div>
                     </div>
-                    <div class="col-12 col-md-6 mb-4 mb-lg-0 col-lg-3">
+                     <div class="col-12 col-md-6 mb-4 mb-lg-0 col-lg-3">
                         <div class="card">
-                            <h5 class="card-header">Revenue Expected</h5>
+                            <h5 class="card-header">Revenue</h5>
                             <div class="card-body">
                               <h5 class="card-title">$2.4k</h5>
                               <p class="card-text">Feb 1 - Apr 1, United States</p>
@@ -169,7 +172,7 @@
                     </div>
                     <div class="col-12 col-md-6 mb-4 mb-lg-0 col-lg-3">
                         <div class="card">
-                            <h5 class="card-header">Remaining time to maturity</h5>
+                            <h5 class="card-header">Purchases</h5>
                             <div class="card-body">
                               <h5 class="card-title">43</h5>
                               <p class="card-text">Feb 1 - Apr 1, United States</p>
@@ -187,8 +190,8 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
+                </div> -->
+                <!-- <div class="row">
                     <div class="col-12 col-xl-8 mb-4 mb-lg-0">
                         <div class="card">
                             <h5 class="card-header">Latest transactions</h5>
@@ -269,9 +272,9 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <footer class="pt-5 d-flex justify-content-between">
-                    <span>Copyright © 2019-2020 <a href="#">spinpesa</a></span>
+                    <span>Copyright © 2019-2020 <a href="https://themesberg.com">Themesberg</a></span>
                     <ul class="nav m-0">
                         <li class="nav-item">
                           <a class="nav-link text-secondary" aria-current="page" href="#">Privacy Policy</a>

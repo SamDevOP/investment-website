@@ -23,6 +23,12 @@ def login_user():
     
     #connection.execute('INSERT INTO StudentExamScores VALUES (?,?,?,?)', data)
     #pass
+def insert_transactions(t_data):
+    con.execute('INSERT INTO transactions VALUES (?,?,?)', t_data)
 
 def retrieve_transactions():
-    pass
+    con = sql3.connect(non_normalized_db_filename,check_same_thread=False)
+    cursor = con.cursor()
+    query = """SELECT * from transactions"""
+    cursor.execute(query)
+    retrieve_transactions.records = cursor.fetchall()

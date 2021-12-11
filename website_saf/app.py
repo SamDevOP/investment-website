@@ -8,6 +8,7 @@ from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 from sqlqueries import *
 from mpesa_views import *
+from datetime import datetime
 
 
 UPLOAD_FOLDER = 'docs/'
@@ -102,13 +103,20 @@ def dashboard():
     #     my_c2b.simulate(shortcode=600988,command_id='CustomerPayBillOnline',amount=fund_cash,msisdn=phonenumber)
     #     #return render_template('dashboard.html')
     #     flash("Your account has been credited")
-
-
-
     return render_template('dashboard_home.html')
     #downloads = os.path.join(current_app.root_path,'')
     #return send_from_directory(directory=downloads,filename='decrypted.txt', as_attachment=True)
-            
+@app.route('/withdraw',methods =["GET","POST"])
+def withdraw():
+    withdraw_cash = request.form["withdraw_cash"]
+    the_date=datetime.now()
+    insert_transactions((session['email'],'Withdrawal',withdraw_cash,the_date))
+    return render_template('withdraw.html')  
+
+@app.route('/fund',methods =["GET","POST"])
+def fund():
+
+    return render_template('fund_acct.html')          
 if __name__ == '__main__':
     
     app.run()
