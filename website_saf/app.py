@@ -39,7 +39,7 @@ def upload_dashboard():
                 flash('Passwords Don\'t match')
             else:
                 if len(root_pass)<8:
-                    flash("Your Password shoould be more than 8 Characters")
+                    flash("Your Password should be more than 8 Characters")
                 else:
                     create_user((mail,phone,root_pass))
                     #pass
@@ -51,6 +51,8 @@ def upload_dashboard():
             login_user()
             for each in login_user.records:
                 #print(each[1],each[2])
+                session['email']=each[0]
+              
                 if phonenum==each[0] and passcode==each[2]:
                     #print(phonenum,passcode)
                     session['response']=each[0]
@@ -83,7 +85,7 @@ def upload_dashboard():
         
             
 
-    return render_template('upload.html')
+    return render_template('login_register.html')
 # @app.route('/download')
 # def download():
 #     downloads = os.path.join(current_app.root_path,'')
@@ -92,18 +94,18 @@ def upload_dashboard():
 
 @app.route('/dashboard',methods =["GET","POST"])
 def dashboard():
-    if request.method== "POST":
-        fund_cash=request.form.get('fund_cash')
-        print(fund_cash)
-        phonenumber=254798766620 #session['response']
-        my_c2b=C2B()
-        my_c2b.simulate(shortcode=600988,command_id='CustomerPayBillOnline',amount=fund_cash,msisdn=phonenumber)
-        #return render_template('dashboard.html')
-        flash("Your account has been credited")
+    # if request.method== "POST":
+    #     fund_cash=request.form.get('fund_cash')
+    #     print(fund_cash)
+    #     phonenumber=254798766620 #session['response']
+    #     my_c2b=C2B()
+    #     my_c2b.simulate(shortcode=600988,command_id='CustomerPayBillOnline',amount=fund_cash,msisdn=phonenumber)
+    #     #return render_template('dashboard.html')
+    #     flash("Your account has been credited")
 
 
 
-    return render_template('dashboard.html')
+    return render_template('dashboard_home.html')
     #downloads = os.path.join(current_app.root_path,'')
     #return send_from_directory(directory=downloads,filename='decrypted.txt', as_attachment=True)
             
