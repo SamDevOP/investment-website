@@ -8,7 +8,7 @@ from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 from sqlqueries import *
 #from mpesa_views import *
-from datetime import datetime
+from datetime import datetime,timedelta
 
 
 UPLOAD_FOLDER = 'docs/'
@@ -105,11 +105,17 @@ def dashboard():
     #     flash("Your account has been credited")
     retrieve_transactions(session['email'])
     my_records= retrieve_transactions.records
-    
-    
+
+    for all in my_records:
+        if all[1]=='Fund Account' and all[4]>all[3]:
+            amount_invested=all[2]
+            expected_income=amount_invested + (amount_invested*0.4)  
+            invest_date=all[3]
+            maturity_date =all[4]
    
 
-    return render_template('dashboard_home.html',my_records=my_records)
+    return render_template('dashboard_home.html',my_records=my_records,expected_income=expected_income,\
+        amount_invested=amount_invested,maturity_date=maturity_date,invest_date=invest_date)
     #downloads = os.path.join(current_app.root_path,'')
     #return send_from_directory(directory=downloads,filename='decrypted.txt', as_attachment=True)
 @app.route('/referrals',methods =["GET","POST"])
@@ -131,8 +137,16 @@ def fund():
     if request.method == "POST":
         fund_cash = request.form["fund_cash"]
         the_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        insert_transactions((session['email'],'Fund Account',fund_cash,the_date))
-        flash("Your account has been credited with " + str(fund_cash))
+        maturity_date=(datetime.now() + timedelta(hours=48)).strftime("%d/%m/%Y %H:%M:%S")
+        retrieve_transactions(session['email'])
+        record =retrieve_transactions.records
+        for all in record:
+            if all[1]=='Fund Account' and all[4]>all[3]:
+                flash("You have a live transaction")
+            else:
+                insert_transactions((session['email'],'Fund Account',fund_cash,the_date,maturity_date))
+                flash("Your account has been credited with " + str(fund_cash))
+        # insert_transactions((session['email'],'Fund Account',fund_cash,the_date,maturity_date))
     return render_template('fund_acct.html')          
 if __name__ == '__main__':
     

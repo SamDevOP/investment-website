@@ -151,9 +151,9 @@
                         <div class="card">
                             <h5 class="card-header">Amount Invested</h5>
                             <div class="card-body">
-                              <h5 class="card-title">345k</h5>
-                              <p class="card-text">Feb 1 - Apr 1, United States</p>
-                              <p class="card-text text-success">18.2% increase since last month</p>
+                              <h5 class="card-title">{{ amount_invested }}</h5>
+                              <p class="card-text">Date invested: {{ invest_date }}</p>
+                              <!-- <p class="card-text text-success">18.2% increase since last month</p> -->
                             </div>
                           </div>
                     </div>
@@ -161,9 +161,9 @@
                         <div class="card">
                             <h5 class="card-header">Revenue Expected</h5>
                             <div class="card-body">
-                              <h5 class="card-title">$2.4k</h5>
-                              <p class="card-text">Feb 1 - Apr 1, United States</p>
-                              <p class="card-text text-success">4.6% increase since last month</p>
+                              <h5 class="card-title" style="color: green;">{{ expected_income }}</h5>
+                              <p class="card-text">Maturity date: {{ maturity_date }}</p>
+                              <p class="card-text text-success">40.0% increase</p>
                             </div>
                           </div>
                     </div>

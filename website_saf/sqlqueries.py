@@ -24,7 +24,7 @@ def login_user():
     #connection.execute('INSERT INTO StudentExamScores VALUES (?,?,?,?)', data)
     #pass
 def insert_transactions(t_data):
-    con.execute('INSERT INTO transactions VALUES (?,?,?,?)', t_data)
+    con.execute('INSERT INTO transactions VALUES (?,?,?,?,?)', t_data)
     con.commit()
 
 def retrieve_transactions(email):

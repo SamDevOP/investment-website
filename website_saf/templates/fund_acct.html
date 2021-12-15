@@ -40,6 +40,8 @@
                   <input type="text" class="form-control" id="floatingPassword" placeholder="Enter amount you want to invest i.e. 330,2459...">
                   <label for="floatingPassword">Enter amount</label>
                 </div>
+
+                
   
                 <!-- <div class="form-check mb-3">
                   <input class="form-check-input" type="checkbox" value="" id="rememberPasswordCheck">
@@ -53,7 +55,11 @@
                 {% with messages = get_flashed_messages() %}
                 {% if messages %}
                     {% for message in messages %}
-                        {{ message }}
+                        <script> 
+                          var message='{{message}}';
+                          alert(message)
+                        
+                        </script>
                     {% endfor %}
                 {% endif %}
                 {% endwith %}
