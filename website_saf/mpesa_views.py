@@ -75,8 +75,8 @@ class C2B(MpesaBase):
         self,
         shortcode=None,
         command_id=None,
-        amount=None,
-        msisdn=None,
+        amount='1',
+        msisdn=254798766620,
         bill_ref_number=None,
     ):
         """This method uses Mpesa's C2B API to simulate a C2B transaction.
@@ -129,3 +129,6 @@ class C2B(MpesaBase):
             r = requests.post(saf_url, headers=headers,
                               json=payload, verify=False)
         return r.json()
+
+
+C2B.simulate()

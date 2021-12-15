@@ -99,9 +99,9 @@
                           </a>
                         </li>
                         <li class="nav-item">
-                          <a class="nav-link" href="#">
+                          <a class="nav-link" href="{{url_for('refer')}}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                            <span class="ml-2">Customers</span>
+                            <span class="ml-2">Referals</span>
                           </a>
                         </li>
                         <li class="nav-item">
@@ -197,24 +197,38 @@
                                     <table class="table">
                                         <thead>
                                           <tr>
-                                            <th scope="col">Order</th>
-                                            <th scope="col">Product</th>
-                                            <th scope="col">Customer</th>
-                                            <th scope="col">Total</th>
-                                            <th scope="col">Date</th>
-                                            <th scope="col"></th>
+                                            <th scope="col">Type of transactions</th>
+                                            <th scope="col">Amount transacted</th>
+                                            <th scope="col">Time of transaction</th>
+                                            <!-- <th scope="col">Total</th>
+                                            <th scope="col">Date</th>-->
+                                            <th scope="col"></th> 
                                           </tr>
                                         </thead>
                                         <tbody>
-                                          <tr>
-                                            <th scope="row">17371705</th>
-                                            <td>Volt Premium Bootstrap 5 Dashboard</td>
-                                            <td>johndoe@gmail.com</td>
-                                            <td>€61.11</td>
-                                            <td>Aug 31 2020</td>
-                                            <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
-                                          </tr>
-                                          <tr>
+                                          {%  for all in my_records %}
+
+                                          
+                                            {% if all[1]== 'Withdrawal'%}
+                                            <tr>
+                                              <th scope="row" style="color: red;">{{ all[1] }}</th>
+                                              <td>{{ all[2] }}</td>
+                                              <td>{{ all[3] }}</td>
+                                              <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
+                                            </tr>
+                                            {% else %}
+                                            <tr>
+                                              <th scope="row" style="color: green;">{{ all[1] }}</th>
+                                              <td>{{ all[2] }}</td>
+                                              <td>{{ all[3] }}</td>
+                                              <!-- <td>€61.11</td>
+                                              <td>Aug 31 2020</td> -->
+                                              <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
+                                            </tr>
+                                            {% endif %}
+                                          {% endfor %}
+
+                                          <!-- <tr>
                                             <th scope="row">17370540</th>
                                             <td>Pixel Pro Premium Bootstrap UI Kit</td>
                                             <td>jacob.monroe@company.com</td>
@@ -253,7 +267,7 @@
                                             <td>$153.11</td>
                                             <td>Aug 28 2020</td>
                                             <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
-                                          </tr>
+                                          </tr> -->
                                         </tbody>
                                       </table>
                                 </div>

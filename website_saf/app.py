@@ -7,7 +7,7 @@ from flask.helpers import send_from_directory
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 from sqlqueries import *
-from mpesa_views import *
+#from mpesa_views import *
 from datetime import datetime
 
 
@@ -103,19 +103,36 @@ def dashboard():
     #     my_c2b.simulate(shortcode=600988,command_id='CustomerPayBillOnline',amount=fund_cash,msisdn=phonenumber)
     #     #return render_template('dashboard.html')
     #     flash("Your account has been credited")
-    return render_template('dashboard_home.html')
+    retrieve_transactions(session['email'])
+    my_records= retrieve_transactions.records
+    
+    
+   
+
+    return render_template('dashboard_home.html',my_records=my_records)
     #downloads = os.path.join(current_app.root_path,'')
     #return send_from_directory(directory=downloads,filename='decrypted.txt', as_attachment=True)
+@app.route('/referrals',methods =["GET","POST"])
+def refer():
+    return render_template('refer.html')
+
+
 @app.route('/withdraw',methods =["GET","POST"])
 def withdraw():
-    withdraw_cash = request.form["withdraw_cash"]
-    the_date=datetime.now()
-    insert_transactions((session['email'],'Withdrawal',withdraw_cash,the_date))
+    if request.method == "POST":
+        withdraw_cash = request.form["withdraw_cash"]
+        the_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        insert_transactions((session['email'],'Withdrawal',withdraw_cash,the_date))
+        flash("Withdrawn " + str(withdraw_cash))
     return render_template('withdraw.html')  
 
 @app.route('/fund',methods =["GET","POST"])
 def fund():
-
+    if request.method == "POST":
+        fund_cash = request.form["fund_cash"]
+        the_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        insert_transactions((session['email'],'Fund Account',fund_cash,the_date))
+        flash("Your account has been credited with " + str(fund_cash))
     return render_template('fund_acct.html')          
 if __name__ == '__main__':
     
