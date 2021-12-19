@@ -111,11 +111,21 @@ def dashboard():
             amount_invested=all[2]
             expected_income=amount_invested + (amount_invested*0.4)  
             invest_date=all[3]
-            maturity_date =all[4]
+            maturitydate = all[4]
+            maturity_date= datetime.strptime(maturitydate, '%d/%m/%Y %H:%M:%S')
+            #time_remaining= datetime.now()
    
+            if maturity_date < datetime.now():
+                time_remaining = 'Your transaction is complete'
+            else:
+                time_remaining = maturity_date - datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
+
+
+            
 
     return render_template('dashboard_home.html',my_records=my_records,expected_income=expected_income,\
-        amount_invested=amount_invested,maturity_date=maturity_date,invest_date=invest_date)
+        amount_invested=amount_invested,maturity_date=maturity_date,invest_date=invest_date,time_remaining=time_remaining)
     #downloads = os.path.join(current_app.root_path,'')
     #return send_from_directory(directory=downloads,filename='decrypted.txt', as_attachment=True)
 @app.route('/referrals',methods =["GET","POST"])
