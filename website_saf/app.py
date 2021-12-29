@@ -36,6 +36,7 @@ def upload_dashboard():
             #add a fetch all to chech for emails and phone duplication
             root_pass=request.form["root_pass"]
             repeat_pass=request.form["repeat_pass"]
+            
             if root_pass != repeat_pass:
                 flash('Passwords Don\'t match')
             else:
@@ -50,6 +51,7 @@ def upload_dashboard():
             phonenum=request.form["phonenum"]
             passcode=request.form["passcode"]
             login_user()
+            generate_refer_code()
             for each in login_user.records:
                 #print(each[1],each[2])
                 session['email']=each[0]
@@ -104,28 +106,45 @@ def dashboard():
     #     #return render_template('dashboard.html')
     #     flash("Your account has been credited")
     retrieve_transactions(session['email'])
+    fund_transactions(session['email'])
     my_records= retrieve_transactions.records
-
-    for all in my_records:
-        if all[1]=='Fund Account' and all[4]>all[3]:
-            amount_invested=all[2]
-            expected_income=amount_invested + (amount_invested*0.4)  
-            invest_date=all[3]
-            maturitydate = all[4]
-            maturity_date= datetime.strptime(maturitydate, '%d/%m/%Y %H:%M:%S')
-            #time_remaining= datetime.now()
-   
-            if maturity_date < datetime.now():
-                time_remaining = 'Your transaction is complete'
-            else:
-                time_remaining = maturity_date - datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-
+    if my_records==[]:
+        amount_invested= 0
+        expected_income=  0
+        invest_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        maturitydate = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        maturity_date= datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        time_remaining=0
+    else:
+        for all in my_records:
+            if all[1]=='Invested' and all[4]>all[3]:
+                amount_invested=all[2]
+                if amount_invested==0:
+                    expected_income=0
+                else:
+                    expected_income=amount_invested + (amount_invested*0.4)  
+                invest_date=all[3]
+                maturitydate = all[4]
+                maturity_date= datetime.strptime(maturitydate, '%d/%m/%Y %H:%M:%S')
+                #wallet=all[5]
+                #time_remaining= datetime.now()
+    
+                if maturity_date < datetime.now():
+                    time_remaining = 'Your transaction is complete'
+                else:
+                    time_remaining = maturity_date - datetime.now()
+        
+    fund_records= fund_transactions.records
+    if fund_records == []:
+        wallet=0
+    for fund in fund_records:
+        wallet=fund[4]
 
 
             
 
     return render_template('dashboard_home.html',my_records=my_records,expected_income=expected_income,\
-        amount_invested=amount_invested,maturity_date=maturity_date,invest_date=invest_date,time_remaining=time_remaining)
+        amount_invested=amount_invested,maturity_date=maturity_date,invest_date=invest_date,time_remaining=time_remaining,wallet=wallet)
     #downloads = os.path.join(current_app.root_path,'')
     #return send_from_directory(directory=downloads,filename='decrypted.txt', as_attachment=True)
 @app.route('/referrals',methods =["GET","POST"])
@@ -147,17 +166,42 @@ def fund():
     if request.method == "POST":
         fund_cash = request.form["fund_cash"]
         the_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        maturity_date=(datetime.now() + timedelta(hours=48)).strftime("%d/%m/%Y %H:%M:%S")
+        #maturity_date=(datetime.now() + timedelta(hours=48)).strftime("%d/%m/%Y %H:%M:%S")
+        #insert_funds((session['email'],'filler',fund_cash,the_date,0))
+        fund_transactions(session['email'])
+        record =fund_transactions.records
+        if record==[]:
+            #inserts filler information
+            insert_funds((session['email'],'filler',fund_cash,the_date,0))
+        for all in record:
+            wallet=int(all[4])+int(fund_cash) 
+        insert_funds((session['email'],'Fund Account',fund_cash,the_date,wallet))
+        flash("Your account has been credited with " + str(fund_cash))
+        # insert_transactions((session['email'],'Fund Account',fund_cash,the_date,maturity_date))
+    return render_template('fund_acct.html')
+
+@app.route('/invest',methods =["GET","POST"])
+def invest():
+    if request.method == "POST":
+        fund_cash = request.form["fund_cash"]
+        the_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        maturity_date=(datetime.now() + timedelta(hours=72)).strftime("%d/%m/%Y %H:%M:%S")
+        fund_transactions(session['email'])
+        my_data = fund_transactions.records
+        for all in my_data:
+            wallet=all[4]
+        
         retrieve_transactions(session['email'])
         record =retrieve_transactions.records
-        for all in record:
-            if all[1]=='Fund Account' and all[4]>all[3]:
-                flash("You have a live transaction")
-            else:
-                insert_transactions((session['email'],'Fund Account',fund_cash,the_date,maturity_date))
-                flash("Your account has been credited with " + str(fund_cash))
+        if record==[]:
+            insert_transactions((session['email'],'Filler',0,the_date,maturity_date))
+        else:
+            insert_transactions((session['email'],'Invested',fund_cash,the_date,maturity_date))
+            flash("You have invested " + str(fund_cash))
+            wallet=int(wallet)-int(fund_cash)
+            update_wallet((wallet,session['email']))
         # insert_transactions((session['email'],'Fund Account',fund_cash,the_date,maturity_date))
-    return render_template('fund_acct.html')          
+    return render_template('invest.html')           
 if __name__ == '__main__':
     
     app.run()

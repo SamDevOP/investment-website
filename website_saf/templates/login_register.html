@@ -22,7 +22,9 @@
                             <div class="login">
                                 <div class="group"> <label for="phone" class="label">Email</label> <input id="phone" type="email" class="input" name="phonenum" placeholder="Enter your email" required> </div>
                                 <div class="group"> <label for="pass" class="label">Password</label> <input id="pass" type="password" class="input" data-type="password" name="passcode" placeholder="Enter your password" required> </div>
+                                
                                 <div class="group"> <input id="check" type="checkbox" name="keep" class="check" checked> <label for="check"><span class="icon"></span> Keep me Signed in</label> </div>
+                                
                                 <div class="group"> <input type="submit" class="button" value="Sign In"> </div>
                                 {% with messages = get_flashed_messages() %}
                                     {% if messages %}
@@ -42,6 +44,10 @@
                                 <div class="group"> <label for="phone" class="label">Phone Number</label> <input id="phone" type="text" class="input" name="phone" placeholder="Create your M-Pesa Number" required> </div>
                                 <div class="group"> <label for="pass" class="label">Password</label> <input id="pass" type="password" class="input" data-type="password" name="root_pass" placeholder="Create your password" required> </div>
                                 <div class="group"> <label for="pass" class="label">Repeat Password</label> <input id="pass" type="password" class="input" data-type="password" name="repeat_pass" placeholder="Repeat your password" required> </div>
+
+                                <div class="group"> <label for="pass" class="label">Referral Code</label> <input id="refer" type="text" class="input" data-type="text" name="refer_code" placeholder="Referral Code"> </div>
+                                
+                                
                                 <div class="group"> <input id="check" type="checkbox" name="terms_conditions" class="check" checked> <label for="check"><span class="icon"></span> Accept <a href="#">Terms and Conditions</a></label> </div>
                                 <div class="group"> <input type="submit" class="button" value="Sign Up"> </div>
                                 {% with messages = get_flashed_messages() %}
