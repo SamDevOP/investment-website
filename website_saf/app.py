@@ -11,100 +11,81 @@ from sqlqueries import *
 from datetime import datetime,timedelta
 
 
-UPLOAD_FOLDER = 'docs/'
-ALLOWED_EXTENSIONS = ['pdf', 'txt','docx']
+
 
 #Initializing flask app
 app=Flask(__name__)
-app.config['UPLOAD_FOLDER']= UPLOAD_FOLDER
 
+Base_URL="http://localhost:5000/signup/"
 
 app.config["SECRET_KEY"] = 'TPmi4aLWRbyVq8zu9v82dWYW1AHEKSpdsr'
 
-# def allowed_file(filename,ALLOWED_EXTENSIONS):
-#     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
 @app.route('/',methods =["GET","POST"])
-def upload_dashboard():
+@app.route('/login',methods=["GET","POST"])
+def login():
     if request.method== "POST":
-        checking=request.form.get('terms_conditions')
-        keep=request.form.get('keep')
-
-        if checking == 'on':
-            mail=request.form["mail"]
-            phone=request.form["phone"]
-            #add a fetch all to chech for emails and phone duplication
-            root_pass=request.form["root_pass"]
-            repeat_pass=request.form["repeat_pass"]
-            
-            if root_pass != repeat_pass:
-                flash('Passwords Don\'t match')
+        phonenum=request.form["email"]
+        passcode=request.form["password"]
+        login_user()
+        for each in login_user.records:
+                    #print(each[1],each[2])
+            session['email']=each[0]
+                
+            if phonenum==each[0] and passcode==each[2]:
+                #print(phonenum,passcode)
+                session['response']=each[0]
+                #generate_refer_code()
+                return redirect('/dashboard')
             else:
-                if len(root_pass)<8:
-                    flash("Your Password should be more than 8 Characters")
-                else:
-                    create_user((mail,phone,root_pass))
-                    #pass
+                flash("Email or Password not correct!")
+    return render_template('login.html')
 
-        #log in
-        elif keep=='on' or keep=='off':    
-            phonenum=request.form["phonenum"]
-            passcode=request.form["passcode"]
-            login_user()
-            generate_refer_code()
-            for each in login_user.records:
-                #print(each[1],each[2])
-                session['email']=each[0]
-              
-                if phonenum==each[0] and passcode==each[2]:
-                    #print(phonenum,passcode)
-                    session['response']=each[0]
-                    return redirect('/dashboard')
-                else:
-                    flash("Number or Password not correct!")
-        #print(passcode,phonenum)
-        #login_user()
+
+@app.route('/signup',methods =["GET","POST"])
+@app.route('/signup/<referral_code>',methods =["GET","POST"])
+def signup(referral_code=None):
+    if referral_code:
+        referral_c = referral_code
+    if request.method== "POST":
+        mail=request.form["email"]
+        phone=request.form["phone"]
         
-
-        
-        #email = request.form["gall"]
-
-        # if 'pic' not in request.files:
-        #     flash('No file part')
-        #     return redirect(request.url)
-
-        # doc = request.files["pic"]
-        #doc=doc.save(secure_filename(doc.filename))
-        #name=session['email']
-
-        # if doc.filename == '':
-        #     flash('No selected file')
-        #     return redirect(request.url)
-        # if doc and allowed_file(doc.filename,ALLOWED_EXTENSIONS):
-        #     fileName = secure_filename(doc.filename)
-        #     doc.save(os.path.join(app.config['UPLOAD_FOLDER'], fileName))
-        #     docpath = UPLOAD_FOLDER + fileName
-
-        
+            #add a fetch all to chech for emails and phone duplication
+        root_pass=request.form["password"]
+        repeat_pass=request.form["cpassword"]
             
+        if root_pass != repeat_pass:
+            flash('Passwords Don\'t match')
+        else:
+            if len(root_pass)<8:
+                flash("Your Password should be more than 8 Characters")
+            else:
+                r_code=generate_refer_code(mail,phone)
+                ref_code=[]
+                check_codes=retrieve_user_refcode()
+                for all in check_codes:
+                    ref_code.append(all[0])
+                    
+                if referral_c in ref_code:
+                    insert_referals_earned((mail,r_code,referral_c,200))
+                    wallet_email=retrieve_user_email(referral_c)[0]
+                    r_wallet=int(retrieve_wallet(wallet_email)[0])
+                    new_wallet=r_wallet + 200
+                    update_wallet((new_wallet,wallet_email))
 
-    return render_template('login_register.html')
-# @app.route('/download')
-# def download():
-#     downloads = os.path.join(current_app.root_path,'')
-#     return send_from_directory(directory=downloads,filename='encrypted.txt', as_attachment=True)
+                create_user((mail,phone,root_pass,r_code))
+                wallet = 0
+                insert_wallet((mail,wallet))
+
+                flash("Account created Successfully!")
+                return redirect("/login")
+
+        
+    return render_template('signup.html')
 
 
 @app.route('/dashboard',methods =["GET","POST"])
 def dashboard():
-    # if request.method== "POST":
-    #     fund_cash=request.form.get('fund_cash')
-    #     print(fund_cash)
-    #     phonenumber=254798766620 #session['response']
-    #     my_c2b=C2B()
-    #     my_c2b.simulate(shortcode=600988,command_id='CustomerPayBillOnline',amount=fund_cash,msisdn=phonenumber)
-    #     #return render_template('dashboard.html')
-    #     flash("Your account has been credited")
     retrieve_transactions(session['email'])
     fund_transactions(session['email'])
     my_records= retrieve_transactions.records
@@ -134,11 +115,7 @@ def dashboard():
                 else:
                     time_remaining = maturity_date - datetime.now()
         
-    fund_records= fund_transactions.records
-    if fund_records == []:
-        wallet=0
-    for fund in fund_records:
-        wallet=fund[4]
+    wallet = retrieve_wallet(session['email'])[0]
 
 
             
@@ -149,16 +126,26 @@ def dashboard():
     #return send_from_directory(directory=downloads,filename='decrypted.txt', as_attachment=True)
 @app.route('/referrals',methods =["GET","POST"])
 def refer():
-    return render_template('refer.html')
+
+    referral_link=Base_URL+retrieve_referal_code(session['email'])
+    
+    return render_template('refer.html',referral_link=referral_link)
 
 
 @app.route('/withdraw',methods =["GET","POST"])
 def withdraw():
     if request.method == "POST":
-        withdraw_cash = request.form["withdraw_cash"]
+        withdrawn_cash = int(request.form["withdraw_cash"])
         the_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        insert_transactions((session['email'],'Withdrawal',withdraw_cash,the_date))
-        flash("Withdrawn " + str(withdraw_cash))
+        wallet=int(retrieve_wallet(session['email'])[0])
+        withdraw_cash = withdrawn_cash + 30
+        if withdraw_cash>wallet:
+            flash("Your transaction cannot be completed due to insufficient Funds")
+        else:
+            wallet = wallet - withdraw_cash
+            update_wallet((wallet,session['email']))
+            flash("Withdrawn " + str(withdrawn_cash) + " Cost of Transaction: 30" )
+
     return render_template('withdraw.html')  
 
 @app.route('/fund',methods =["GET","POST"])
@@ -166,16 +153,13 @@ def fund():
     if request.method == "POST":
         fund_cash = request.form["fund_cash"]
         the_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        #maturity_date=(datetime.now() + timedelta(hours=48)).strftime("%d/%m/%Y %H:%M:%S")
-        #insert_funds((session['email'],'filler',fund_cash,the_date,0))
-        fund_transactions(session['email'])
-        record =fund_transactions.records
-        if record==[]:
-            #inserts filler information
-            insert_funds((session['email'],'filler',fund_cash,the_date,0))
-        for all in record:
-            wallet=int(all[4])+int(fund_cash) 
-        insert_funds((session['email'],'Fund Account',fund_cash,the_date,wallet))
+        
+        #add Mpesa transaction information here
+
+        wallet=retrieve_wallet(session['email'])[0]
+
+        wallet = int(wallet) + int(fund_cash)
+        update_wallet((wallet,session['email']))
         flash("Your account has been credited with " + str(fund_cash))
         # insert_transactions((session['email'],'Fund Account',fund_cash,the_date,maturity_date))
     return render_template('fund_acct.html')
@@ -201,7 +185,11 @@ def invest():
             wallet=int(wallet)-int(fund_cash)
             update_wallet((wallet,session['email']))
         # insert_transactions((session['email'],'Fund Account',fund_cash,the_date,maturity_date))
-    return render_template('invest.html')           
+    return render_template('invest.html')    
+    
+@app.route('/credentials',methods =["GET","POST"])
+def mpepe():
+    return render_template('mpesa.html')          
 if __name__ == '__main__':
     
     app.run()

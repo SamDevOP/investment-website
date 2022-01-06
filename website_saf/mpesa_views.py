@@ -1,8 +1,11 @@
+import base64
 import requests
+from auth import MpesaBase
+import datetime
 from mpesa_credentials import *
+from test import *
 
-
-class C2B(MpesaBase):
+class MpesaExpress(MpesaBase):
     def __init__(
         self,
         env="sandbox",
@@ -15,44 +18,141 @@ class C2B(MpesaBase):
                            sandbox_url, live_url)
         self.authentication_token = self.authenticate()
 
-    def register(
+    def stk_push(
         self,
-        shortcode=None,
-        response_type=None,
-        confirmation_url=None,
-        validation_url=None,
+        business_shortcode=174379,
+        passcode=PASS_KEY,
+        amount=1,
+        callback_url='https://mydomain.com/path',
+        reference_code="Test",
+        phone_number="254798766620",
+        description="Test",
     ):
-        """This method uses Mpesa's C2B API to register validation and confirmation URLs on M-Pesa.
+        """This method uses Mpesa's Express API to initiate online payment on behalf of a customer..
 
         **Args:**
 
-        - `shortcode` (int): The short code of the organization.
+        - `business_shortcode` (int): The short code of the organization.
 
-        - `response_type` (str): Default response type for timeout. Incase a tranaction times out, Mpesa will by default Complete or Cancel the transaction.
+        - `passcode` (str): Get from developer portal
 
-        - `confirmation_url` (str): Confirmation URL for the client.
+        - `amount` (int): The amount being transacted
 
-        - `validation_url` (str): Validation URL for the client.
+        - `callback_url` (str): A CallBack URL is a valid secure URL that is used to receive notifications from M-Pesa API.
+
+        - `reference_code`: Account Reference: This is an Alpha-Numeric parameter that is defined by your system as an Identifier of the transaction for CustomerPayBillOnline transaction type.
+
+        - `phone_number`: The Mobile Number to receive the STK Pin Prompt.
+
+        - `description`: This is any additional information/comment that can be sent along with the request from your system. MAX 13 characters
 
 
 
         **Returns:**
 
-        - `OriginatorConversationID` (str): The unique request ID for tracking a transaction.
+        - `CustomerMessage` (str):
 
-        - `ConversationID` (str): The unique request ID returned by mpesa for each request made
+        - `CheckoutRequestID` (str):
 
-        - `ResponseDescription` (str): Response Description message
+        - `ResponseDescription` (str):
 
+        - `MerchantRequestID` (str):
+
+        - `ResponseCode` (str):
 
 
         """
 
+        time = (
+            str(datetime.datetime.now())
+            .split(".")[0]
+            .replace("-", "")
+            .replace(" ", "")
+            .replace(":", "")
+        )
+       
+        password = "{0}{1}{2}".format(
+            str(business_shortcode), str(passcode), time)
+        print(password)
+        encoded = base64.b64encode(bytes(password, encoding="utf8"))
+        
+
         payload = {
-            "ShortCode": shortcode,
-            "ResponseType": response_type,
-            "ConfirmationURL": confirmation_url,
-            "ValidationURL": validation_url,
+            "BusinessShortCode": business_shortcode,
+            "Password": passcode,#encoded.decode("utf-8"),
+            "Timestamp": time,
+            "TransactionType": "CustomerPayBillOnline",
+            "Amount": amount,
+            "PartyA": int(phone_number),
+            "PartyB": business_shortcode,
+            "PhoneNumber": int(phone_number),
+            "CallBackURL": callback_url,
+            "AccountReference": reference_code,
+            "TransactionDesc": description,
+        }
+        
+        headers = {
+            "Authorization": "Bearer {0}".format(self.authentication_token),
+            "Content-Type": "application/json",
+        }
+        if self.env == "production":
+            base_safaricom_url = self.live_url
+        else:
+            base_safaricom_url = self.sandbox_url
+        saf_url = "{0}{1}".format(
+            base_safaricom_url, "/mpesa/stkpush/v1/processrequest"
+        )
+        
+        try:
+            r = requests.post(saf_url, headers=headers, data=payload)
+            
+        except Exception as e:
+            r = requests.post(saf_url, headers=headers,data=payload, verify=False)
+        print(r)    
+        return r.json()
+
+    def query(self, business_shortcode=None, checkout_request_id=None, passcode=None):
+        """This method uses Mpesa's Express API to check the status of a Lipa Na M-Pesa Online Payment..
+
+        **Args:**
+
+        - `business_shortcode` (int): This is organizations shortcode (Paybill or Buygoods - A 5 to 6 digit account number) used to identify an organization and receive the transaction.
+
+        - `checkout_request_id` (str): This is a global unique identifier of the processed checkout transaction request.
+
+        - `passcode` (str): Get from developer portal
+
+
+        **Returns:**
+
+        - `CustomerMessage` (str):
+
+        - `CheckoutRequestID` (str):
+
+        - `ResponseDescription` (str):
+
+        - `MerchantRequestID` (str):
+
+        - `ResponseCode` (str):
+
+
+        """
+
+        time = (
+            str(datetime.datetime.now())
+            .split(".")[0]
+            .replace("-", "")
+            .replace(" ", "")
+            .replace(":", "")
+        )
+        password = "{0}{1}{2}".format(
+            str(business_shortcode), str(passcode), time)
+        encoded = base64.b64encode(bytes(password, encoding="utf8"))
+        payload = {
+            "BusinessShortCode": business_shortcode,
+            "Password": PASS_KEY,  #encoded.decode("utf-8"),
+            "Timestamp": time,
+            "CheckoutRequestID": checkout_request_id,
         }
         headers = {
             "Authorization": "Bearer {0}".format(self.authentication_token),
@@ -63,7 +163,7 @@ class C2B(MpesaBase):
         else:
             base_safaricom_url = self.sandbox_url
         saf_url = "{0}{1}".format(
-            base_safaricom_url, "/mpesa/c2b/v1/registerurl")
+            base_safaricom_url, "/mpesa/stkpushquery/v1/query")
         try:
             r = requests.post(saf_url, headers=headers, json=payload)
         except Exception as e:
@@ -71,64 +171,6 @@ class C2B(MpesaBase):
                               json=payload, verify=False)
         return r.json()
 
-    def simulate(
-        self,
-        shortcode=None,
-        command_id=None,
-        amount='1',
-        msisdn=254798766620,
-        bill_ref_number=None,
-    ):
-        """This method uses Mpesa's C2B API to simulate a C2B transaction.
-
-        **Args:**
-
-        - `shortcode` (int): The short code of the organization.
-
-        - `command_id` (str): Unique command for each transaction type. - CustomerPayBillOnline - CustomerBuyGoodsOnline.
-
-        - `amount` (int): The amount being transacted
-
-        - `msisdn` (int): Phone number (msisdn) initiating the transaction MSISDN(12 digits)
-
-        - `bill_ref_number`: Optional
-
-
-
-        **Returns:**
-
-        - `OriginatorConverstionID` (str): The unique request ID for tracking a transaction.
-
-        - `ConversationID` (str): The unique request ID returned by mpesa for each request made
-
-        - `ResponseDescription` (str): Response Description message
-
-
-
-        """
-
-        payload = {
-            "ShortCode": shortcode,
-            "CommandID": command_id,
-            "Amount": amount,
-            "Msisdn": msisdn,
-            "BillRefNumber": bill_ref_number,
-        }
-        headers = {
-            "Authorization": "Bearer {0}".format(self.authentication_token),
-            "Content-Type": "application/json",
-        }
-        if self.env == "production":
-            base_safaricom_url = self.live_url
-        else:
-            base_safaricom_url = self.sandbox_url
-        saf_url = "{0}{1}".format(base_safaricom_url, "/mpesa/c2b/v1/simulate")
-        try:
-            r = requests.post(saf_url, headers=headers, json=payload)
-        except Exception as e:
-            r = requests.post(saf_url, headers=headers,
-                              json=payload, verify=False)
-        return r.json()
-
-
-C2B.simulate()
+lipa=MpesaExpress()
+lipa.stk_push()
+#lipa.query()
