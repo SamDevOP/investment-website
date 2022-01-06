@@ -97,12 +97,12 @@ def retrieve_user_email(code):
 #INVESTING
 
 def insert_investing(i_data):
-    con.execute('CREATE TABLE IF NOT EXISTS investing(email TEXT,amount INTEGER,maturity_date DATETIME,investment_date DATETIME,status TEXT,date DATETIME);')
-    con.execute('INSERT INTO investing VALUES (?,?,?,?,?,?)', i_data)
+    con.execute('CREATE TABLE IF NOT EXISTS investing(email TEXT,amount INTEGER,maturity_date DATETIME,investment_date DATETIME,status TEXT,date DATETIME,added_wallet TEXT);')
+    con.execute('INSERT INTO investing VALUES (?,?,?,?,?,?,?)', i_data)
     con.commit()
 
 def retrieve_investing(email):
-    con.execute('CREATE TABLE IF NOT EXISTS investing(email TEXT,amount INTEGER,maturity_date DATETIME,investment_date DATETIME,status TEXT,date DATETIME);')
+    con.execute('CREATE TABLE IF NOT EXISTS investing(email TEXT,amount INTEGER,maturity_date DATETIME,investment_date DATETIME,status TEXT,date DATETIME,added_wallet TEXT);')
     cursor.execute('SELECT * from investing WHERE email = ?;',(email,))
     return cursor.fetchall()
     
@@ -111,9 +111,14 @@ def update_investing(ui_data):
     con.execute('UPDATE investing SET status  = ? WHERE email = ?',ui_data)
     con.commit()
 
+def update_investing_added_wallet(ui_data):
+    con.execute('UPDATE investing SET added_wallet  = ? WHERE email = ?',ui_data)
+    con.commit()
+
+
 #returns number of investments a day
 def select_number_of_inv(date):
-    con.execute('CREATE TABLE IF NOT EXISTS investing(email TEXT,amount INTEGER,maturity_date DATETIME,investment_date DATETIME,status TEXT,date DATETIME);')
+    con.execute('CREATE TABLE IF NOT EXISTS investing(email TEXT,amount INTEGER,maturity_date DATETIME,investment_date DATETIME,status TEXT,date DATETIME,added_wallet TEXT);')
     cursor.execute('SELECT * from investing WHERE status = ? AND date = ?;',date)
     return cursor.fetchall()
 
