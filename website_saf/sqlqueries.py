@@ -41,31 +41,7 @@ def retrieve_transactions(email):
     #('SELECT COUNT(Name) FROM "{}" WHERE Name=?'.format(group.replace('"', '""')), (food,))
     retrieve_transactions.records = cursor.fetchall()
 
-def update_wallet(data):
-    #UPDATE transactions SET wallet = ? WHERE email = ?
-    con.execute('UPDATE fund_transactions SET wallet = ? WHERE email = ?',(data))
-    con.commit()
 
-def insert_funds(fund_data):
-    con.execute('INSERT INTO fund_transactions VALUES (?,?,?,?,?)', fund_data)
-    con.commit()
-
-def fund_transactions(email):
-    cursor.execute('SELECT * from fund_transactions WHERE email = ?',(email,))
-    #('SELECT COUNT(Name) FROM "{}" WHERE Name=?'.format(group.replace('"', '""')), (food,))
-    fund_transactions.records = cursor.fetchall()
-
-def insert_referals(refer_data):
-    con.execute('INSERT INTO referral VALUES (?,?,?)', refer_data)
-    con.commit()
-
-def get_referal(email,code,refered_by,amount_earned):
-    cursor.execute('SELECT * from referral')
-    refers=cursor.fetchall()
-    #email,referal_code,refered_by,amount_earned
-    # if refers==[]:
-    #     insert_referals(())
-    #for all in refers:
 
 #REFERRAL CODE OPERATIONS
 
@@ -73,7 +49,7 @@ def generate_refer_code(mail,phone):
     mail_code=mail.split('@')
     refer_code=mail_code[0].upper()+str(phone[4:])
     return refer_code
-
+##get referal code from users table
 def retrieve_referal_code(email):
     cursor.execute('SELECT referal_code from users WHERE email = ?',(email,))
     return cursor.fetchone()[0]
@@ -105,6 +81,10 @@ def retrieve_referals(email):
     cursor.execute('SELECT * from referrals WHERE email = ?',(email,))
     return cursor.fetchall()
 
+def retrieve_referals_numbers(code):
+    cursor.execute('SELECT * from referrals WHERE refered_by = ?',(code,))
+    return cursor.fetchall()
+
 def retrieve_user_refcode():
     cursor.execute('SELECT referal_code from users;')
     return cursor.fetchall()
@@ -114,7 +94,30 @@ def retrieve_user_email(code):
     return cursor.fetchone()
 
 
-print(retrieve_user_refcode())#retrieve_user_email('ADMIN2298766620'))
+#INVESTING
 
+def insert_investing(i_data):
+    con.execute('CREATE TABLE IF NOT EXISTS investing(email TEXT,amount INTEGER,maturity_date DATETIME,investment_date DATETIME,status TEXT,date DATETIME);')
+    con.execute('INSERT INTO investing VALUES (?,?,?,?,?,?)', i_data)
+    con.commit()
 
+def retrieve_investing(email):
+    con.execute('CREATE TABLE IF NOT EXISTS investing(email TEXT,amount INTEGER,maturity_date DATETIME,investment_date DATETIME,status TEXT,date DATETIME);')
+    cursor.execute('SELECT * from investing WHERE email = ?;',(email,))
+    return cursor.fetchall()
+    
+
+def update_investing(ui_data):
+    con.execute('UPDATE investing SET status  = ? WHERE email = ?',ui_data)
+    con.commit()
+
+#returns number of investments a day
+def select_number_of_inv(date):
+    con.execute('CREATE TABLE IF NOT EXISTS investing(email TEXT,amount INTEGER,maturity_date DATETIME,investment_date DATETIME,status TEXT,date DATETIME);')
+    cursor.execute('SELECT * from investing WHERE status = ? AND date = ?;',date)
+    return cursor.fetchall()
+
+# from datetime import datetime
+# date=datetime.now().strftime("%d/%m/%Y")
+# print(select_number_of_inv(("Live",str(date))))
 

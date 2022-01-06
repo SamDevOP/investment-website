@@ -15,9 +15,9 @@ cursor = con.cursor()
 # con.execute("CREATE TABLE referral (email TEXT,refferal_code TEXT,refered_by TEXT,amount_refer_earned INT)")
 # con.execute("DROP TABLE wallet")
 # con.execute("CREATE TABLE wallet (email TEXT,wallet_ammount INTEGER);")
+#con.execute("DROP TABLE investing")
 
-
-sql_statement = "select * from users;"
+sql_statement = "select * from investing;"
 df = pd.read_sql_query(sql_statement, con)
 print(df)
 con.commit()
