@@ -7,7 +7,7 @@ con = sql3.connect(non_normalized_db_filename)
 cursor = con.cursor()
 # con.execute("DROP TABLE transactions")
 # con.execute("CREATE TABLE transactions (email TEXT,type TEXT, Amount INTEGER, invest_date DATETIME,maturity_date DATETIME)")
-# con.execute("DROP TABLE users")
+#con.execute("DROP TABLE users")
 # con.execute("CREATE TABLE users (email TEXT PRIMARY KEY,phone TEXT,passcode VARCHAR NOT NULL,referal_code TEXT)")
 # con.execute("DROP TABLE fund_transactions")
 # con.execute("CREATE TABLE fund_transactions (email TEXT,type TEXT, Amount INTEGER, fund_date DATETIME,wallet INT)")
@@ -17,7 +17,7 @@ cursor = con.cursor()
 # con.execute("CREATE TABLE wallet (email TEXT,wallet_ammount INTEGER);")
 #con.execute("DROP TABLE investing")
 
-sql_statement = "select * from investing;"
+sql_statement = "select * from users;"
 df = pd.read_sql_query(sql_statement, con)
 print(df)
 con.commit()

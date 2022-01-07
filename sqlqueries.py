@@ -12,6 +12,7 @@ cursor = con.cursor()
 
 
 def create_user(data):
+    con.execute('CREATE TABLE IF NOT EXISTS users (email TEXT PRIMARY KEY,phone TEXT,passcode VARCHAR NOT NULL,referal_code TEXT);')
     con.execute('INSERT INTO users VALUES (?,?,?,?)', data)
     con.commit()
     #pass
@@ -78,14 +79,17 @@ def insert_referals_earned(er_data):
 
 
 def retrieve_referals(email):
+    con.execute('CREATE TABLE IF NOT EXISTS referrals(email TEXT,refferal_code TEXT,refered_by TEXT,amount_refer_earned INTEGER);')
     cursor.execute('SELECT * from referrals WHERE email = ?',(email,))
     return cursor.fetchall()
 
 def retrieve_referals_numbers(code):
+    con.execute('CREATE TABLE IF NOT EXISTS referrals(email TEXT,refferal_code TEXT,refered_by TEXT,amount_refer_earned INTEGER);')
     cursor.execute('SELECT * from referrals WHERE refered_by = ?',(code,))
     return cursor.fetchall()
 
 def retrieve_user_refcode():
+    con.execute('CREATE TABLE IF NOT EXISTS users (email TEXT PRIMARY KEY,phone TEXT,passcode VARCHAR NOT NULL,referal_code TEXT);')
     cursor.execute('SELECT referal_code from users;')
     return cursor.fetchall()
 

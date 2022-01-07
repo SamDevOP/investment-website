@@ -47,6 +47,8 @@ def login():
 def signup(referral_code=None):
     if referral_code:
         referral_c = referral_code
+    else:
+        referral_c = ''
     if request.method== "POST":
         mail=request.form["email"]
         phone=request.form["phone"]
@@ -66,13 +68,13 @@ def signup(referral_code=None):
                 check_codes=retrieve_user_refcode()
                 for all in check_codes:
                     ref_code.append(all[0])
-                    
-                if referral_c in ref_code:
-                    insert_referals_earned((mail,r_code,referral_c,200))
-                    wallet_email=retrieve_user_email(referral_c)[0]
-                    r_wallet=int(retrieve_wallet(wallet_email)[0])
-                    new_wallet=r_wallet + 200
-                    update_wallet((new_wallet,wallet_email))
+                if referral_c!='':    
+                    if referral_c in ref_code:
+                        insert_referals_earned((mail,r_code,referral_c,200))
+                        wallet_email=retrieve_user_email(referral_c)[0]
+                        r_wallet=int(retrieve_wallet(wallet_email)[0])
+                        new_wallet=r_wallet + 200
+                        update_wallet((new_wallet,wallet_email))
 
                 create_user((mail,phone,root_pass,r_code))
                 wallet = 0
@@ -87,7 +89,7 @@ def signup(referral_code=None):
 
 @app.route('/dashboard',methods =["GET","POST"])
 def dashboard():
-    retrieve_transactions(session['email'])
+    #retrieve_transactions(session['email'])
     #fund_transactions(session['email'])
     my_records= retrieve_investing(session['email'])
     wallet = int(retrieve_wallet(session['email'])[0])
