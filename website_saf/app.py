@@ -97,7 +97,7 @@ def dashboard():
         invest_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         maturitydate = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         maturity_date= datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        time_remaining=0
+        time_remaining=0.0
         remaining_time=0
     else:
         total_revenue=[]
@@ -109,22 +109,22 @@ def dashboard():
         for all in my_records:
             maturitydate = all[2]
             maturity_date= datetime.strptime(maturitydate, '%d/%m/%Y %H:%M:%S')
-            if all[4] == "Done" and all[6]=="NO":
-                value = wallet + (int(all[1]) + ((int(all[1])*0.4)))
-                update_wallet((value,session['email']))
-                update_investing_added_wallet(("YES",session['email']))
-            
-            if all[4]=="Live":
-                total_invested.append(all[1])
-                total_revenue.append((int(all[1]) + ((int(all[1])*0.4))))
+            time_remaining = maturity_date - datetime.now()
+            if time_remaining.total_seconds()<=0:
+                update_investing(('Done',session['email'],all[7]))
+            else:  
+                update_investing(('Live',session['email'],all[7]))
 
-            if maturity_date < today:
-                time_remaining = 0
-                update_investing(('Done',session['email']))
-            else:
-                #update_investing(('Live',session['email']))
-                time_remaining = maturity_date - datetime.now()
-            remaining_time.append(time_remaining)
+        if all[4]=="Live" and all[6]=="NO":
+            total_invested.append(all[1])
+            total_revenue.append((int(all[1]) + ((int(all[1])*0.4))))
+
+        if all[4] == "Done" and all[6]=="NO":
+            value = wallet + (int(all[1]) + ((int(all[1])*0.4)))
+            update_wallet((value,session['email']))
+            update_investing_added_wallet(("YES",session['email']))
+        
+            remaining_time.append(time_remaining.total_seconds())
         expected_income=sum(total_revenue)
         amount_invested=sum(total_invested)
    
@@ -136,7 +136,7 @@ def dashboard():
 
 
     return render_template('dashboard_home.html',my_records=my_records,expected_income=expected_income,\
-        amount_invested=amount_invested,remaining_time=remaining_time,wallet=wallet,total_referals=total_referals)
+        amount_invested=amount_invested,remaining_time=time_remaining,wallet=wallet,total_referals=total_referals)
     
 
 
@@ -186,20 +186,21 @@ def invest():
         fund_cash = request.form["fund_cash"]
         investment_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         date=datetime.now().strftime("%d/%m/%Y")
-        maturity_date=(datetime.now() + timedelta(minutes=2)).strftime("%d/%m/%Y %H:%M:%S") #(hours=72)
+        maturity_date=(datetime.now() + timedelta(hours=72)).strftime("%d/%m/%Y %H:%M:%S") #(hours=72)
         the_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         the_date=datetime.strptime(the_date, '%d/%m/%Y %H:%M:%S').date()
         my_data = retrieve_investing(session['email'])
+        inv_id='INV'
 
         wallet=int(retrieve_wallet(session['email'])[0])
 
         if len(my_data)==0:
-          
+            inv_id=inv_id + str(len(my_data))
             if int(fund_cash)> int(wallet):
                 flash("You have insufficient balance to complete the investment")
                 return redirect('/fund')
             else:
-                insert_investing((session['email'],fund_cash,maturity_date,investment_date,'Live',date,'NO'))
+                insert_investing((session['email'],fund_cash,maturity_date,investment_date,'Live',date,'NO',inv_id))
                 wallet=int(wallet)-int(fund_cash)
                 update_wallet((wallet,session['email']))
                 flash("You have invested " + str(fund_cash))
@@ -211,7 +212,8 @@ def invest():
                     flash("You have insufficient balance to complete the investment")
                     return redirect('/fund')
                 else:
-                    insert_investing((session['email'],fund_cash,maturity_date,investment_date,'Live',date,'NO'))
+                    inv_id=inv_id + str(len(my_data))
+                    insert_investing((session['email'],fund_cash,maturity_date,investment_date,'Live',date,'NO',inv_id))
                     wallet=int(wallet)-int(fund_cash)
                     update_wallet((wallet,session['email']))
                     flash("You have invested " + str(fund_cash))
