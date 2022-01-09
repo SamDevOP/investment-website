@@ -226,6 +226,6 @@ def invest():
 @app.route('/credentials',methods =["GET","POST"])
 def mpepe():
     return render_template('mpesa.html')          
-# if __name__ == '__main__':
+if __name__ == '__main__':
     
-#     app.run()
+    app.run()
