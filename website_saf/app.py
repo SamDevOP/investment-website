@@ -17,7 +17,7 @@ from datetime import datetime,timedelta
 #Initializing flask app
 app=Flask(__name__)
 
-Base_URL="http://localhost:5000/signup/"
+Base_URL="https://peakinvestors-app.herokuapp.com/"
 
 app.config["SECRET_KEY"] = 'TPmi4aLWRbyVq8zu9v82dWYW1AHEKSpdsr'
 
