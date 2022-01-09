@@ -9,8 +9,6 @@ non_normalized_db_filename='spin_pesa'
 con = sql3.connect(non_normalized_db_filename,check_same_thread=False)
 cursor = con.cursor()
 
-
-
 def create_user(data):
     con.execute('CREATE TABLE IF NOT EXISTS users (email TEXT PRIMARY KEY,phone TEXT,passcode VARCHAR NOT NULL,referal_code TEXT);')
     con.execute('INSERT INTO users VALUES (?,?,?,?)', data)
