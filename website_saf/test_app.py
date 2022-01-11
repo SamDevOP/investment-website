@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_restful import Api, Resource, reqparse
-import datetime
+from datetime import datetime
 import requests
 from requests.auth import HTTPBasicAuth
 import base64
@@ -21,24 +21,18 @@ def get_mpesa_token():
 
 
 # initialize a flask app
-app = Flask(__name__)
+# app = Flask(__name__)
 
 # intialize a flask-restful api
-api = Api(app)
+# api = Api(app)
 
-class MakeSTKPush(Resource):
+class MakeSTKPush():
 
     # get 'phone' and 'amount' from request body
-    parser = reqparse.RequestParser()
-    parser.add_argument('phone',
-            type=str,
-            required=True,
-            help="This field is required")
+    # parser = reqparse.RequestParser()
+    # parser.add_argument('phone',type=str,required=True,help="This field is required")
 
-    parser.add_argument('amount',
-            type=str,
-            required=True,
-            help="this fied is required")
+    # parser.add_argument('amount',type=str,required=True,help="this fied is required")
 
     # make stkPush method
     def post(self):
@@ -46,7 +40,7 @@ class MakeSTKPush(Resource):
         """ make and stk push to daraja API"""
 
         encode_data = b"<Business_shortcode><online_passkey><current timestamp>" 
-
+        time=datetime.now().strftime("%Y%m%d%H%M%S")
         # encode business_shortcode, online_passkey and current_time (yyyyMMhhmmss) to base64
         passkey  = base64.b64encode(encode_data)
 
@@ -56,6 +50,8 @@ class MakeSTKPush(Resource):
             # get access_token
             access_token = get_mpesa_token()
 
+            print(access_token)
+
             # stk_push request url
             api_url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
 
@@ -63,25 +59,38 @@ class MakeSTKPush(Resource):
             headers = { "Authorization": f"Bearer {access_token}" ,"Content-Type": "application/json" }
 
             # get phone and amount
-            data = MakeSTKPush.parser.parse_args()
+            #data = MakeSTKPush.parser.parse_args()
 
             # define request body
             request = {    
-                "BusinessShortCode":"174379",    
-                "Password": "MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMTYwMjE2MTY1NjI3",    
-                "Timestamp":"20160216165627",    
-                "TransactionType": "CustomerPayBillOnline",    
-                "Amount":"1",    
-                "PartyA":"254798766620",    
-                "PartyB":"174379",    
-                "PhoneNumber":"254798766620",    
-                "CallBackURL":"https://mydomain.com/pat",    
-                "AccountReference":"Test",    
-                "TransactionDesc":"Test"
+                "BusinessShortCode": 174379,
+
+                "Password": "MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMjIwMTA1MjIwMjI3",
+
+                "Timestamp": time,
+
+                "TransactionType": "CustomerPayBillOnline",
+
+                "Amount": 1,
+
+                "PartyA": 254798766620,
+
+                "PartyB": 174379,
+
+                "PhoneNumber": 254798766620,
+
+                "CallBackURL": "https://mydomain.com/path",
+
+                "AccountReference": "CompanyXLTD",
+
+                "TransactionDesc": "Payment of X" 
+
                 }
 
             # make request and catch response
             response = requests.post(api_url,json=request,headers=headers)
+
+            print(response)
 
             # check response code for errors and return response
             if response.status_code > 299:
@@ -111,8 +120,11 @@ class MakeSTKPush(Resource):
 
 
 # stk push path [POST request to {baseURL}/stkpush]
-api.add_resource(MakeSTKPush,"/stkpush")
+# api.add_resource(MakeSTKPush,"/stkpush", methods=['GET', 'POST'])
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
     
-    app.run(port=5000,debug=True)
+#     app.run()
+
+p=MakeSTKPush()
+p.post()

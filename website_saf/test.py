@@ -1,5 +1,5 @@
 import requests
-
+from datetime import datetime
 headers = {
 
   'Content-Type': 'application/json',
@@ -8,14 +8,14 @@ headers = {
 
 }
 
-
+time=datetime.now().strftime("%Y%m%d%H%M%S")
 payload = {
 
     "BusinessShortCode": 174379,
 
     "Password": "MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMjIwMTA1MjIwMjI3",
 
-    "Timestamp": "20220105220227",
+    "Timestamp": time,
 
     "TransactionType": "CustomerPayBillOnline",
 
