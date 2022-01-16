@@ -16,13 +16,13 @@ def create_user(data):
     #pass
 
 def login_user():
-    con = sql3.connect(non_normalized_db_filename,check_same_thread=False)
-    cursor = con.cursor()
+    con.execute('CREATE TABLE IF NOT EXISTS users (email TEXT PRIMARY KEY,phone TEXT,passcode VARCHAR NOT NULL,referal_code TEXT);')
     query = """SELECT * from users"""
     cursor.execute(query)
     login_user.records = cursor.fetchall()
 
 def retrieve_username():
+    con.execute('CREATE TABLE IF NOT EXISTS users (email TEXT PRIMARY KEY,phone TEXT,passcode VARCHAR NOT NULL,referal_code TEXT);')
     user_name=[]
     cursor.execute("SELECT referal_code from users")
     for i in cursor.fetchall():
@@ -30,6 +30,7 @@ def retrieve_username():
     return user_name
 
 def retrieve_user_phone(email):#sam@gmail.com
+    con.execute('CREATE TABLE IF NOT EXISTS users (email TEXT PRIMARY KEY,phone TEXT,passcode VARCHAR NOT NULL,referal_code TEXT);')
     cursor.execute("SELECT phone from users WHERE email=?",(email,))
     phone=cursor.fetchone()[0]
     return phone
