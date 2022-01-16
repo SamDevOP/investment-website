@@ -10,6 +10,7 @@ from werkzeug.utils import secure_filename
 from sqlqueries import *
 from mpesa_views import *
 from datetime import datetime,timedelta
+import base64
 
 
 
@@ -82,15 +83,15 @@ def signup(referral_code=None):
                                 r_wallet=int(retrieve_wallet(wallet_email)[0])
                                 new_wallet=r_wallet + 200
                                 update_wallet((new_wallet,wallet_email))
+                        
+                        rootpass=root_pass.encode("utf-8")
 
                         create_user((mail,phone,root_pass,username))
                         wallet = 0
                         insert_wallet((mail,wallet))
 
                         flash("Account created Successfully!")
-                        return redirect("/login")
-
-        
+                        return redirect("/login")  
     return render_template('signup.html')
 
 
