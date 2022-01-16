@@ -32,7 +32,8 @@ def login():
         for each in login_user.records:
                     #print(each[1],each[2])
             session['email']=each[0]
-                
+            #pass_word=base64.b64decode(each[2])
+            #time.sleep(2)
             if phonenum==each[0] and passcode==each[2]:
                 #print(phonenum,passcode)
                 session['response']=each[0]
@@ -69,7 +70,7 @@ def signup(referral_code=None):
                     flash("Username exists. Choose another.")
                 else:
                     #r_code=generate_refer_code(mail,phone)
-                    if len(username)!=12:
+                    if len(phone)!=12:
                         flash("Mpesa phone number is incorrect. Format is: 2547XXXXXXXX")
                     else:
                         ref_code=[]
@@ -84,8 +85,8 @@ def signup(referral_code=None):
                                 new_wallet=r_wallet + 200
                                 update_wallet((new_wallet,wallet_email))
                         
-                        rootpass=root_pass.encode("utf-8")
-
+                        #rootpass=root_pass.encode("utf-8")
+                        #encoded_rootpass=base64.b64encode(rootpass)
                         create_user((mail,phone,root_pass,username))
                         wallet = 0
                         insert_wallet((mail,wallet))
@@ -104,7 +105,7 @@ def dashboard():
     if len(my_records)==0:
         amount_invested= 0
         expected_income=  0
-        invest_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        #invest_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         maturitydate = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         maturity_date= datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         time_remaining=0.0
@@ -182,7 +183,6 @@ def fund():
         wallet=retrieve_wallet(session['email'])[0]
         #add Mpesa transaction information here
         phone=retrieve_user_phone(session['email'])
-
         
         lipa=MpesaExpress()
         stkpush=lipa.stk_push(amount=str(fund_cash),phone_number=phone)
@@ -195,7 +195,7 @@ def fund():
             wallet = int(wallet) + int(fund_cash)
             update_wallet((wallet,session['email']))
             flash("Your account has been credited with " + str(fund_cash))
-        # insert_transactions((session['email'],'Fund Account',fund_cash,the_date,maturity_date))
+            #insert_transactions((session['email'],'Fund Account',fund_cash,the_date,maturity_date))
     return render_template('fund_acct.html')
 
 @app.route('/invest',methods =["GET","POST"])
