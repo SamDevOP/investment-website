@@ -1,10 +1,11 @@
 import base64
 import requests
 from auth import MpesaBase
-import datetime
+from datetime import datetime
+import time
 from mpesa_credentials import *
-from test import *
-
+#from test import *
+till="174379"
 class MpesaExpress(MpesaBase):
     def __init__(
         self,
@@ -17,16 +18,16 @@ class MpesaExpress(MpesaBase):
         MpesaBase.__init__(self, env, app_key, app_secret,
                            sandbox_url, live_url)
         self.authentication_token = self.authenticate()
-
+#Till number 9309125
     def stk_push(
         self,
-        business_shortcode=174379,
-        passcode=PASS_KEY,
-        amount=1,
+        business_shortcode=till,
+        passcode=None,
+        amount=None,
         callback_url='https://mydomain.com/path',
-        reference_code="Test",
-        phone_number="254798766620",
-        description="Test",
+        reference_code="Peak Investors",
+        phone_number=None,
+        description="Peak Investors",
     ):
         """This method uses Mpesa's Express API to initiate online payment on behalf of a customer..
 
@@ -62,30 +63,19 @@ class MpesaExpress(MpesaBase):
 
 
         """
-
-        time = (
-            str(datetime.datetime.now())
-            .split(".")[0]
-            .replace("-", "")
-            .replace(" ", "")
-            .replace(":", "")
-        )
-       
-        password = "{0}{1}{2}".format(
-            str(business_shortcode), str(passcode), time)
-        print(password)
-        encoded = base64.b64encode(bytes(password, encoding="utf8"))
-        
-
+        paskey=PASS_KEY
+        time=datetime.now().strftime("%Y%m%d%H%M%S")
+        encode_data = business_shortcode + paskey + time
+        passkey  = base64.b64encode(encode_data.encode())
         payload = {
             "BusinessShortCode": business_shortcode,
-            "Password": passcode,#encoded.decode("utf-8"),
+            "Password": passkey.decode('utf-8'),#encoded.decode("utf-8"),
             "Timestamp": time,
             "TransactionType": "CustomerPayBillOnline",
             "Amount": amount,
-            "PartyA": int(phone_number),
+            "PartyA": phone_number,
             "PartyB": business_shortcode,
-            "PhoneNumber": int(phone_number),
+            "PhoneNumber": phone_number,
             "CallBackURL": callback_url,
             "AccountReference": reference_code,
             "TransactionDesc": description,
@@ -93,8 +83,7 @@ class MpesaExpress(MpesaBase):
         
         headers = {
             "Authorization": "Bearer {0}".format(self.authentication_token),
-            "Content-Type": "application/json",
-        }
+            }
         if self.env == "production":
             base_safaricom_url = self.live_url
         else:
@@ -104,14 +93,14 @@ class MpesaExpress(MpesaBase):
         )
         
         try:
-            r = requests.post(saf_url, headers=headers, data=payload)
+            r = requests.post(saf_url, headers=headers, json=payload)
             
         except Exception as e:
-            r = requests.post(saf_url, headers=headers,data=payload, verify=False)
-        print(r)    
+            r = requests.post(saf_url, headers=headers,json=payload, verify=False)
+        print(r.text)    
         return r.json()
 
-    def query(self, business_shortcode=None, checkout_request_id=None, passcode=None):
+    def query(self, business_shortcode=till, checkout_request_id=None, passcode=None):
         """This method uses Mpesa's Express API to check the status of a Lipa Na M-Pesa Online Payment..
 
         **Args:**
@@ -138,25 +127,18 @@ class MpesaExpress(MpesaBase):
 
         """
 
-        time = (
-            str(datetime.datetime.now())
-            .split(".")[0]
-            .replace("-", "")
-            .replace(" ", "")
-            .replace(":", "")
-        )
-        password = "{0}{1}{2}".format(
-            str(business_shortcode), str(passcode), time)
-        encoded = base64.b64encode(bytes(password, encoding="utf8"))
+        paskey=PASS_KEY
+        time=datetime.now().strftime("%Y%m%d%H%M%S")
+        encode_data = business_shortcode + paskey + time
+        passkey  = base64.b64encode(encode_data.encode())
         payload = {
             "BusinessShortCode": business_shortcode,
-            "Password": PASS_KEY,  #encoded.decode("utf-8"),
+            "Password": passkey.decode('utf-8'),  #encoded.decode("utf-8"),
             "Timestamp": time,
             "CheckoutRequestID": checkout_request_id,
         }
         headers = {
             "Authorization": "Bearer {0}".format(self.authentication_token),
-            "Content-Type": "application/json",
         }
         if self.env == "production":
             base_safaricom_url = self.live_url
@@ -169,8 +151,12 @@ class MpesaExpress(MpesaBase):
         except Exception as e:
             r = requests.post(saf_url, headers=headers,
                               json=payload, verify=False)
+        print(r.text)
         return r.json()
 
-lipa=MpesaExpress()
-lipa.stk_push()
-#lipa.query()
+# lipa=MpesaExpress()
+
+# stkpush=lipa.stk_push(amount="1",phone_number="254798766620")
+
+# time.sleep(10)
+# check_stkpush=lipa.query(checkout_request_id=stkpush["CheckoutRequestID"])

@@ -22,6 +22,20 @@ def login_user():
     cursor.execute(query)
     login_user.records = cursor.fetchall()
 
+def retrieve_username():
+    user_name=[]
+    cursor.execute("SELECT referal_code from users")
+    for i in cursor.fetchall():
+        user_name.append(i[0])
+    return user_name
+
+def retrieve_user_phone(email):#sam@gmail.com
+    cursor.execute("SELECT phone from users WHERE email=?",(email,))
+    phone=cursor.fetchone()[0]
+    return phone
+
+
+"""=============================Users============================================="""
 
 
 
@@ -130,4 +144,4 @@ def select_number_of_inv(date):
 # from datetime import datetime
 # date=datetime.now().strftime("%d/%m/%Y")
 # print(select_number_of_inv(("Live",str(date))))
-
+#print(retrieve_user_phone(email))
