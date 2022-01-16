@@ -180,7 +180,9 @@ def fund():
     if request.method == "POST":
         fund_cash = request.form["fund_cash"]
         the_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        wallet=retrieve_wallet(session['email'])[0]
+        if len(retrieve_wallet(session['email']))>0:
+            wallet=retrieve_wallet(session['email'])[0]
+        
         #add Mpesa transaction information here
         phone=retrieve_user_phone(session['email'])
         
