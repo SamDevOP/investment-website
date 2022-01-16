@@ -68,24 +68,27 @@ def signup(referral_code=None):
                     flash("Username exists. Choose another.")
                 else:
                     #r_code=generate_refer_code(mail,phone)
-                    ref_code=[]
-                    check_codes=retrieve_user_refcode()
-                    for all in check_codes:
-                        ref_code.append(all[0])
-                    if referral_c!='':    
-                        if referral_c in ref_code:
-                            insert_referals_earned((mail,username,referral_c,200))
-                            wallet_email=retrieve_user_email(referral_c)[0]
-                            r_wallet=int(retrieve_wallet(wallet_email)[0])
-                            new_wallet=r_wallet + 200
-                            update_wallet((new_wallet,wallet_email))
+                    if len(username)!=12:
+                        flash("Mpesa phone number is incorrect. Format is: 2547XXXXXXXX")
+                    else:
+                        ref_code=[]
+                        check_codes=retrieve_user_refcode()
+                        for all in check_codes:
+                            ref_code.append(all[0])
+                        if referral_c!='':    
+                            if referral_c in ref_code:
+                                insert_referals_earned((mail,username,referral_c,200))
+                                wallet_email=retrieve_user_email(referral_c)[0]
+                                r_wallet=int(retrieve_wallet(wallet_email)[0])
+                                new_wallet=r_wallet + 200
+                                update_wallet((new_wallet,wallet_email))
 
-                    create_user((mail,phone,root_pass,username))
-                    wallet = 0
-                    insert_wallet((mail,wallet))
+                        create_user((mail,phone,root_pass,username))
+                        wallet = 0
+                        insert_wallet((mail,wallet))
 
-                    flash("Account created Successfully!")
-                    return redirect("/login")
+                        flash("Account created Successfully!")
+                        return redirect("/login")
 
         
     return render_template('signup.html')
