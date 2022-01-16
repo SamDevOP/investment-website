@@ -8,7 +8,7 @@ from flask.helpers import send_from_directory
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 from sqlqueries import *
-#from mpesa_views import *
+from mpesa_views import *
 from datetime import datetime,timedelta
 
 
@@ -52,7 +52,7 @@ def signup(referral_code=None):
     if request.method== "POST":
         mail=request.form["email"]
         phone=request.form["phone"]
-        
+        username = request.form["username"]       
             #add a fetch all to chech for emails and phone duplication
         root_pass=request.form["password"]
         repeat_pass=request.form["cpassword"]
@@ -63,25 +63,29 @@ def signup(referral_code=None):
             if len(root_pass)<8:
                 flash("Your Password should be more than 8 Characters")
             else:
-                r_code=generate_refer_code(mail,phone)
-                ref_code=[]
-                check_codes=retrieve_user_refcode()
-                for all in check_codes:
-                    ref_code.append(all[0])
-                if referral_c!='':    
-                    if referral_c in ref_code:
-                        insert_referals_earned((mail,r_code,referral_c,200))
-                        wallet_email=retrieve_user_email(referral_c)[0]
-                        r_wallet=int(retrieve_wallet(wallet_email)[0])
-                        new_wallet=r_wallet + 200
-                        update_wallet((new_wallet,wallet_email))
+                username_check=retrieve_username()
+                if username in username_check:
+                    flash("Username exists. Choose another.")
+                else:
+                    #r_code=generate_refer_code(mail,phone)
+                    ref_code=[]
+                    check_codes=retrieve_user_refcode()
+                    for all in check_codes:
+                        ref_code.append(all[0])
+                    if referral_c!='':    
+                        if referral_c in ref_code:
+                            insert_referals_earned((mail,username,referral_c,200))
+                            wallet_email=retrieve_user_email(referral_c)[0]
+                            r_wallet=int(retrieve_wallet(wallet_email)[0])
+                            new_wallet=r_wallet + 200
+                            update_wallet((new_wallet,wallet_email))
 
-                create_user((mail,phone,root_pass,r_code))
-                wallet = 0
-                insert_wallet((mail,wallet))
+                    create_user((mail,phone,root_pass,username))
+                    wallet = 0
+                    insert_wallet((mail,wallet))
 
-                flash("Account created Successfully!")
-                return redirect("/login")
+                    flash("Account created Successfully!")
+                    return redirect("/login")
 
         
     return render_template('signup.html')
@@ -171,14 +175,22 @@ def fund():
     if request.method == "POST":
         fund_cash = request.form["fund_cash"]
         the_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        
-        #add Mpesa transaction information here
-
         wallet=retrieve_wallet(session['email'])[0]
+        #add Mpesa transaction information here
+        phone=retrieve_user_phone(session['email'])
 
-        wallet = int(wallet) + int(fund_cash)
-        update_wallet((wallet,session['email']))
-        flash("Your account has been credited with " + str(fund_cash))
+        
+        lipa=MpesaExpress()
+        stkpush=lipa.stk_push(amount=str(fund_cash),phone_number=phone)
+        flash("Payment request has been sent to your number")
+        time.sleep(10)
+        check_stkpush=lipa.query(checkout_request_id=stkpush["CheckoutRequestID"])
+        if check_stkpush["Body"]["stkCallback"]["ResultCode"]!=0:
+            flash("Unable to receive funds")
+        else:
+            wallet = int(wallet) + int(fund_cash)
+            update_wallet((wallet,session['email']))
+            flash("Your account has been credited with " + str(fund_cash))
         # insert_transactions((session['email'],'Fund Account',fund_cash,the_date,maturity_date))
     return render_template('fund_acct.html')
 

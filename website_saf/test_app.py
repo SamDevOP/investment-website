@@ -36,11 +36,15 @@ class MakeSTKPush():
 
     # make stkPush method
     def post(self):
+        paskey="bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919"
+        bus_short=str(174379)
+        time=datetime.now().strftime("%Y%m%d%H%M%S")
+
 
         """ make and stk push to daraja API"""
 
-        encode_data = b"<Business_shortcode><online_passkey><current timestamp>" 
-        time=datetime.now().strftime("%Y%m%d%H%M%S")
+        encode_data = bytes(bus_short + paskey + time, "utf-8")  
+        
         # encode business_shortcode, online_passkey and current_time (yyyyMMhhmmss) to base64
         passkey  = base64.b64encode(encode_data)
 
@@ -65,7 +69,7 @@ class MakeSTKPush():
             request = {    
                 "BusinessShortCode": 174379,
 
-                "Password": "MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMjIwMTA1MjIwMjI3",
+                "Password": passkey,
 
                 "Timestamp": time,
 
@@ -88,7 +92,7 @@ class MakeSTKPush():
                 }
 
             # make request and catch response
-            response = requests.post(api_url,json=request,headers=headers)
+            response = requests.post(api_url,data=request,headers=headers)
 
             print(response)
 
