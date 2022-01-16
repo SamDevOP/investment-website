@@ -187,15 +187,15 @@ def fund():
         lipa=MpesaExpress()
         stkpush=lipa.stk_push(amount=str(fund_cash),phone_number=phone)
         flash("Payment request has been sent to your number")
-        time.sleep(10)
-        check_stkpush=lipa.query(checkout_request_id=stkpush["CheckoutRequestID"])
-        if check_stkpush["Body"]["stkCallback"]["ResultCode"]!=0:
-            flash("Unable to receive funds")
-        else:
-            wallet = int(wallet) + int(fund_cash)
-            update_wallet((wallet,session['email']))
-            flash("Your account has been credited with " + str(fund_cash))
-            #insert_transactions((session['email'],'Fund Account',fund_cash,the_date,maturity_date))
+        # time.sleep(10)
+        # check_stkpush=lipa.query(checkout_request_id=stkpush["CheckoutRequestID"])
+        # if check_stkpush["Body"]["stkCallback"]["ResultCode"]!=0:
+        #     flash("Unable to receive funds")
+        # else:
+        #     wallet = int(wallet) + int(fund_cash)
+        #     update_wallet((wallet,session['email']))
+        #     flash("Your account has been credited with " + str(fund_cash))
+        #     #insert_transactions((session['email'],'Fund Account',fund_cash,the_date,maturity_date))
     return render_template('fund_acct.html')
 
 @app.route('/invest',methods =["GET","POST"])
