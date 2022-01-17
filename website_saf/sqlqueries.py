@@ -4,7 +4,7 @@ from flask import Flask,render_template,request,redirect,url_for,flash,session
 from random import randint
 
 
-non_normalized_db_filename='database/spin_pesa'
+non_normalized_db_filename='spin_pesa'
 
 con = sql3.connect(non_normalized_db_filename,check_same_thread=False)
 cursor = con.cursor()
