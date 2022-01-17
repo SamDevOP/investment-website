@@ -42,7 +42,12 @@ def login():
             else:
                 flash("Email or Password not correct!")
     return render_template('login.html')
-
+@app.route('/logout')
+def logout():
+    #logout_user()
+    session["email"]=""
+    #s=session["user_id"]
+    return redirect(url_for('login'))
 
 @app.route('/signup',methods =["GET","POST"])
 @app.route('/signup/<referral_code>',methods =["GET","POST"])
@@ -90,6 +95,7 @@ def signup(referral_code=None):
                         create_user((mail,phone,root_pass,username))
                         wallet = 0
                         insert_wallet((mail,wallet))
+                        insert_activate((mail,username,"DEACTIVATED"))
 
                         flash("Account created Successfully!")
                         return redirect("/login")  
@@ -100,50 +106,55 @@ def signup(referral_code=None):
 def dashboard():
     #retrieve_transactions(session['email'])
     #fund_transactions(session['email'])
-    my_records= retrieve_investing(session['email'])
-    wallet = int(retrieve_wallet(session['email'])[0])
-    if len(my_records)==0:
-        amount_invested= 0
-        expected_income=  0
-        #invest_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        maturitydate = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        maturity_date= datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        time_remaining=0.0
-        remaining_time=0
+    if session["email"]=="":
+        return redirect(url_for('login'))
+
     else:
-        total_revenue=[]
-        total_invested=[]
-        remaining_time=[]
-        today=datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-        today=datetime.now().strptime(today,'%d/%m/%Y %H:%M:%S')
 
-        for all in my_records:
-            maturitydate = all[2]
-            maturity_date= datetime.strptime(maturitydate, '%d/%m/%Y %H:%M:%S')
-            time_remaining = maturity_date - datetime.now()
-            if time_remaining.total_seconds()<=0:
-                update_investing(('Done',session['email'],all[7]))
-            else:  
-                update_investing(('Live',session['email'],all[7]))
+        my_records= retrieve_investing(session['email'])
+        wallet = int(retrieve_wallet(session['email'])[0])
+        if len(my_records)==0:
+            amount_invested= 0
+            expected_income=  0
+            #invest_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+            maturitydate = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+            maturity_date= datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+            time_remaining=0.0
+            remaining_time=0
+        else:
+            total_revenue=[]
+            total_invested=[]
+            remaining_time=[]
+            today=datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+            today=datetime.now().strptime(today,'%d/%m/%Y %H:%M:%S')
 
-        if all[4]=="Live" and all[6]=="NO":
-            total_invested.append(all[1])
-            total_revenue.append((int(all[1]) + ((int(all[1])*0.4))))
+            for all in my_records:
+                maturitydate = all[2]
+                maturity_date= datetime.strptime(maturitydate, '%d/%m/%Y %H:%M:%S')
+                time_remaining = maturity_date - datetime.now()
+                if time_remaining.total_seconds()<=0:
+                    update_investing(('Done',session['email'],all[7]))
+                else:  
+                    update_investing(('Live',session['email'],all[7]))
 
-        if all[4] == "Done" and all[6]=="NO":
-            value = wallet + (int(all[1]) + ((int(all[1])*0.4)))
-            update_wallet((value,session['email']))
-            update_investing_added_wallet(("YES",session['email']))
+            if all[4]=="Live" and all[6]=="NO":
+                total_invested.append(all[1])
+                total_revenue.append((int(all[1]) + ((int(all[1])*0.4))))
+
+            if all[4] == "Done" and all[6]=="NO":
+                value = wallet + (int(all[1]) + ((int(all[1])*0.4)))
+                update_wallet((value,session['email']))
+                update_investing_added_wallet(("YES",session['email']))
+            
+                remaining_time.append(time_remaining.total_seconds())
+            expected_income=sum(total_revenue)
+            amount_invested=sum(total_invested)
+    
         
-            remaining_time.append(time_remaining.total_seconds())
-        expected_income=sum(total_revenue)
-        amount_invested=sum(total_invested)
-   
     
-   
-    total_referals=len(retrieve_referals_numbers(retrieve_referal_code(session['email'])))
-    wallet = int(retrieve_wallet(session['email'])[0])
-    
+        total_referals=len(retrieve_referals_numbers(retrieve_referal_code(session['email'])))
+        wallet = int(retrieve_wallet(session['email'])[0])
+        
 
 
     return render_template('dashboard_home.html',my_records=my_records,expected_income=expected_income,\
@@ -165,13 +176,24 @@ def withdraw():
         withdrawn_cash = int(request.form["withdraw_cash"])
         #the_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         wallet=int(retrieve_wallet(session['email'])[0])
-        withdraw_cash = withdrawn_cash + 30
-        if withdraw_cash>wallet:
-            flash("Your transaction cannot be completed due to insufficient Funds")
+
+        status=retrieve_activate(session['email'])[0]
+
+        if status == "DEACTIVATED":
+            flash("Activate account to be able to invest")
         else:
-            wallet = wallet - withdraw_cash
-            update_wallet((wallet,session['email']))
-            flash("Withdrawn " + str(withdrawn_cash) + " Cost of Transaction: 30" )
+            if int(withdrawn_cash)<=1500:
+                transaction_cost=30
+            elif int(withdrawn_cash)>1500:
+                transaction_cost=50
+
+            withdraw_cash = withdrawn_cash + transaction_cost
+            if withdraw_cash>wallet:
+                flash("Your transaction cannot be completed due to insufficient Funds")
+            else:
+                wallet = wallet - withdraw_cash
+                update_wallet((wallet,session['email']))
+                flash("Withdrawn " + str(withdrawn_cash) + " Cost of Transaction: "+ str(transaction_cost) )
 
     return render_template('withdraw.html')  
 
@@ -186,18 +208,23 @@ def fund():
         #add Mpesa transaction information here
         phone=retrieve_user_phone(session['email'])
         
-        lipa=MpesaExpress()
-        stkpush=lipa.stk_push(amount=str(fund_cash),phone_number=phone)
-        flash("Payment request has been sent to your number")
-        # time.sleep(10)
-        # check_stkpush=lipa.query(checkout_request_id=stkpush["CheckoutRequestID"])
-        # if check_stkpush["Body"]["stkCallback"]["ResultCode"]!=0:
-        #     flash("Unable to receive funds")
-        # else:
-        #     wallet = int(wallet) + int(fund_cash)
-        #     update_wallet((wallet,session['email']))
-        #     flash("Your account has been credited with " + str(fund_cash))
-        #     #insert_transactions((session['email'],'Fund Account',fund_cash,the_date,maturity_date))
+        status=retrieve_activate(session['email'])[0]
+
+        if status == "DEACTIVATED":
+            flash("Activate account to be able to invest")
+        else:
+            lipa=MpesaExpress()
+            stkpush=lipa.stk_push(amount=str(fund_cash),phone_number=phone)
+            flash("Payment request has been sent to your number")
+            # time.sleep(10)
+            # check_stkpush=lipa.query(checkout_request_id=stkpush["CheckoutRequestID"])
+            # if check_stkpush["Body"]["stkCallback"]["ResultCode"]!=0:
+            #     flash("Unable to receive funds")
+            # else:
+            #     wallet = int(wallet) + int(fund_cash)
+            #     update_wallet((wallet,session['email']))
+            #     flash("Your account has been credited with " + str(fund_cash))
+            #     #insert_transactions((session['email'],'Fund Account',fund_cash,the_date,maturity_date))
     return render_template('fund_acct.html')
 
 @app.route('/invest',methods =["GET","POST"])

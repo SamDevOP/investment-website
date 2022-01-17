@@ -142,7 +142,29 @@ def select_number_of_inv(date):
     cursor.execute('SELECT * from investing WHERE status = ? AND date = ?;',date)
     return cursor.fetchall()
 
+
+
+
+#ACTIVATING ACCOUNT
+def insert_activate(i_data):
+    con.execute('CREATE TABLE IF NOT EXISTS activate(email TEXT,username TEXT,status TEXT);')
+    con.execute('INSERT INTO activate VALUES (?,?,?)', i_data)
+    con.commit()
+
+def retrieve_activate(email):
+    con.execute('CREATE TABLE IF NOT EXISTS activate(email TEXT,username TEXT,status TEXT);')
+    cursor.execute('SELECT status from activate WHERE email = ?;',(email,))
+    return cursor.fetchone()
+    
+
+def update_activate(ui_data):
+    con.execute('CREATE TABLE IF NOT EXISTS activate(email TEXT,username TEXT,status TEXT);')
+    con.execute('UPDATE activate SET status  = ? WHERE email = ?',ui_data)
+    con.commit()
+
 # from datetime import datetime
 # date=datetime.now().strftime("%d/%m/%Y")
 # print(select_number_of_inv(("Live",str(date))))
 #print(retrieve_user_phone(email))
+
+#print(retrieve_wallet("samwel@gmail.com")[0])
