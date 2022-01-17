@@ -46,6 +46,7 @@ def login():
 def logout():
     #logout_user()
     session["email"]=""
+    time.sleep(5)
     #s=session["user_id"]
     return redirect(url_for('login'))
 
@@ -230,42 +231,49 @@ def fund():
 @app.route('/invest',methods =["GET","POST"])
 def invest():
     if request.method == "POST":
+        
         fund_cash = request.form["fund_cash"]
         investment_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         date=datetime.now().strftime("%d/%m/%Y")
         maturity_date=(datetime.now() + timedelta(hours=72)).strftime("%d/%m/%Y %H:%M:%S") #(hours=72)
         the_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         the_date=datetime.strptime(the_date, '%d/%m/%Y %H:%M:%S').date()
-        my_data = retrieve_investing(session['email'])
         inv_id='INV'
 
-        wallet=int(retrieve_wallet(session['email'])[0])
-
-        if len(my_data)==0:
-            inv_id=inv_id + str(len(my_data))
-            if int(fund_cash)> int(wallet):
-                flash("You have insufficient balance to complete the investment")
-                return redirect('/fund')
-            else:
-                insert_investing((session['email'],fund_cash,maturity_date,investment_date,'Live',date,'NO',inv_id))
-                wallet=int(wallet)-int(fund_cash)
-                update_wallet((wallet,session['email']))
-                flash("You have invested " + str(fund_cash))
-                
+        if session['email'] == "":
+            return redirect(url_for('login'))
         else:
-            if len(select_number_of_inv(("Live",str(date))))<=2:
-                
+
+            my_data = retrieve_investing(session['email'])
+            
+
+            wallet=int(retrieve_wallet(session['email'])[0])
+
+            if len(my_data)==0:
+                inv_id=inv_id + str(len(my_data))
                 if int(fund_cash)> int(wallet):
                     flash("You have insufficient balance to complete the investment")
                     return redirect('/fund')
                 else:
-                    inv_id=inv_id + str(len(my_data))
                     insert_investing((session['email'],fund_cash,maturity_date,investment_date,'Live',date,'NO',inv_id))
                     wallet=int(wallet)-int(fund_cash)
                     update_wallet((wallet,session['email']))
                     flash("You have invested " + str(fund_cash))
+                    
             else:
-                flash("You have exhausted today \'s investment opportunities")
+                if len(select_number_of_inv(("Live",str(date))))<=2:
+                    
+                    if int(fund_cash)> int(wallet):
+                        flash("You have insufficient balance to complete the investment")
+                        return redirect('/fund')
+                    else:
+                        inv_id=inv_id + str(len(my_data))
+                        insert_investing((session['email'],fund_cash,maturity_date,investment_date,'Live',date,'NO',inv_id))
+                        wallet=int(wallet)-int(fund_cash)
+                        update_wallet((wallet,session['email']))
+                        flash("You have invested " + str(fund_cash))
+                else:
+                    flash("You have exhausted today \'s investment opportunities")
     return render_template('invest.html')    
     
 @app.route('/credentials',methods =["GET","POST"])
