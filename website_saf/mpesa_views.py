@@ -154,9 +154,9 @@ class MpesaExpress(MpesaBase):
         print(r.text)
         return r.json()
 
-# lipa=MpesaExpress()
+lipa=MpesaExpress()
 
-# stkpush=lipa.stk_push(amount="1",phone_number="254798766620")
+stkpush=lipa.stk_push(amount="1",phone_number="254798766620")
 
-# time.sleep(10)
-# check_stkpush=lipa.query(checkout_request_id=stkpush["CheckoutRequestID"])
+time.sleep(10)
+check_stkpush=lipa.query(checkout_request_id=stkpush["CheckoutRequestID"])
