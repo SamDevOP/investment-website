@@ -1,4 +1,5 @@
 #from werkzeug import secure_filename
+import email
 from math import remainder
 import re
 from flask import Flask,render_template,request,redirect,url_for,flash,session
@@ -29,26 +30,26 @@ def login():
         phonenum=request.form["email"]
         passcode=request.form["password"]
         login_user()
+        emails=[]
         for each in login_user.records:
-                    #print(each[1],each[2])
-            session['email']=each[0]
-            #pass_word=base64.b64decode(each[2])
-            #time.sleep(2)
-            if phonenum==each[0] and passcode==each[2]:
-                #print(phonenum,passcode)
-                session['response']=each[0]
-                #generate_refer_code()
+            emails.append(each[0])
+        if phonenum not in emails:
+            flash("The email doesn't exist")
+        else:
+            password=retrieve_password(phonenum)
+            session['email']=phonenum
+            if passcode==password:
                 return redirect('/dashboard')
             else:
                 flash("Email or Password not correct!")
     return render_template('login.html')
 @app.route('/logout')
 def logout():
-    #logout_user()
-    session["email"]=""
-    time.sleep(5)
-    #s=session["user_id"]
-    return redirect(url_for('login'))
+    if 'email' in session:  
+        session.pop('email',None)  
+        return render_template('login.html');  
+    else:  
+        return '<p>user already logged out</p>' 
 
 @app.route('/signup',methods =["GET","POST"])
 @app.route('/signup/<referral_code>',methods =["GET","POST"])

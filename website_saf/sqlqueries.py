@@ -36,6 +36,13 @@ def retrieve_user_phone(email):#sam@gmail.com
     return phone
 
 
+def retrieve_password(email):
+    con.execute('CREATE TABLE IF NOT EXISTS users (email TEXT PRIMARY KEY,phone TEXT,passcode VARCHAR NOT NULL,referal_code TEXT);')
+    cursor.execute("SELECT passcode from users WHERE email=?",(email,))
+    return cursor.fetchone()[0]
+
+
+
 """=============================Users============================================="""
 
 

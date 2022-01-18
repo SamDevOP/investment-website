@@ -17,7 +17,7 @@ cursor = con.cursor()
 # con.execute("CREATE TABLE wallet (email TEXT,wallet_ammount INTEGER);")
 #con.execute("DROP TABLE investing")
 
-sql_statement = "select * from wallet;"
+sql_statement = "select * from users;"
 df = pd.read_sql_query(sql_statement, con)
 print(df)
 con.commit()
