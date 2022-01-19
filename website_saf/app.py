@@ -218,22 +218,30 @@ def fund():
         else:
             lipa=MpesaExpress()
             stkpush=lipa.stk_push(amount=str(fund_cash),phone_number=phone)
-            flash("Payment request has been sent to your number")
-            time.sleep(35)
-            check_stkpush=lipa.query(checkout_request_id=stkpush["CheckoutRequestID"])
-            #check_stkpush=lipa.query(checkout_request_id="ws_CO_190120220940204345")
-            if "ResultCode" in check_stkpush:
-
-                if check_stkpush["ResultCode"]!="0":
-                    flash("Unable to receive funds")
+            time.sleep(5)
+            if "ResponseCode" in stkpush:
+                if stkpush["ResponseCode"] ==  "0":
+                    flash("Payment request has been sent to your number")
                 else:
-                    #insert_mpesa((session['email'],fund_cash,stkpush["CheckoutRequestID"],"SUCCESS",the_date))
-                    wallet = int(wallet) + int(fund_cash)
-                    update_wallet((wallet,session['email']))
-                    flash("Your account has been credited with " + str(fund_cash))
-                    
+                    flash("Payment request failed. Try again later")
             else:
-                flash("An error occured. Refresh Page and try again.")#insert_transactions((session['email'],'Fund Account',fund_cash,the_date,maturity_date))
+                flash("Payment request failed. Try again later")
+            for i in range(1,100):
+                check_stkpush=lipa.query(checkout_request_id=stkpush["CheckoutRequestID"])
+                #check_stkpush=lipa.query(checkout_request_id="ws_CO_190120220940204345")
+                if "ResultCode" in check_stkpush:
+
+                    if check_stkpush["ResultCode"]!="0":
+                        continue
+                    else:
+                        #insert_mpesa((session['email'],fund_cash,stkpush["CheckoutRequestID"],"SUCCESS",the_date))
+                        wallet = int(wallet) + int(fund_cash)
+                        update_wallet((wallet,session['email']))
+                        flash("Your account has been credited with " + str(fund_cash))
+                        break
+                        
+                else:
+                    flash("An error occured. Refresh Page and try again.")#insert_transactions((session['email'],'Fund Account',fund_cash,the_date,maturity_date))
     return render_template('fund_acct.html')
 
 @app.route('/invest',methods =["GET","POST"])
@@ -307,37 +315,32 @@ def activate():
     else:
         status="1"
     if request.method == "POST":
-        status="3"
-
-        
+        #status="3"
         phone=retrieve_user_phone(session['email'])
         
         if acc_status=="DEACTIVATED":
             lipa=MpesaExpress()
             stkpush=lipa.stk_push(amount="1",phone_number=phone)
+            #time.sleep()
             if stkpush["ResponseCode"]=="0":
                 flash("Activation fee payment request has been sent to your number")
             #time.sleep(35)
-            check_stkpush=lipa.query(checkout_request_id=stkpush["CheckoutRequestID"])
-            if "errorCode" not in check_stkpush:
-                if check_stkpush["ResultCode"]!="0":
-                    flash("Account not activated. Try again ")
-                    status="0"
-                    return redirect("/activate")
-                else:
-                    status="1"
-                    update_activate(("ACTIVATED",session['email']))
-                    time.sleep(2)
-                    flash("Account activated.")
-                    time.sleep(2)
-                    return redirect('/dashboard')
-            else:
-                status="3"  
-                return redirect("/activate")
-        else:
-            status="1"
-
-
+            for i in range(1,100):
+                check_stkpush=lipa.query(checkout_request_id=stkpush["CheckoutRequestID"])
+                if "errorCode" not in check_stkpush:
+                    if check_stkpush["ResultCode"]!="0":
+                        #flash("Account not activated. Try again ")
+                        status="0"
+                        time.sleep(2)
+                        continue
+                    else:
+                        status="1"
+                        update_activate(("ACTIVATED",session['email']))
+                        time.sleep(2)
+                        flash("Account activated.")
+                        #time.sleep(2)
+                        #return redirect('/dashboard')
+                        break
     return render_template('activate.html',status=status)
 
 

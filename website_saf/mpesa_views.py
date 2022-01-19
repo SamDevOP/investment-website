@@ -158,6 +158,7 @@ lipa=MpesaExpress()
 
 stkpush=lipa.stk_push(amount="1",phone_number="254798766620")
 
+
 # time.sleep(35)
 # check_stkpush=lipa.query(checkout_request_id=stkpush["CheckoutRequestID"])
 #check_stkpush=lipa.query(checkout_request_id="ws_CO_190120220940204345")
