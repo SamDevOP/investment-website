@@ -158,6 +158,7 @@ def insert_activate(i_data):
     con.execute('INSERT INTO activate VALUES (?,?,?)', i_data)
     con.commit()
 
+
 def retrieve_activate(email):
     con.execute('CREATE TABLE IF NOT EXISTS activate(email TEXT,username TEXT,status TEXT);')
     cursor.execute('SELECT status from activate WHERE email = ?;',(email,))
@@ -169,9 +170,28 @@ def update_activate(ui_data):
     con.execute('UPDATE activate SET status  = ? WHERE email = ?',ui_data)
     con.commit()
 
+#MPEPE
+def insert_mpesa(i_data):
+    con.execute('CREATE TABLE IF NOT EXISTS mpesa(email TEXT,amount TEXT,request_id TEXT,status TEXT,date DATETIME);')
+    con.execute('INSERT INTO mpesa VALUES (?,?,?,?)', i_data)
+    con.commit()
+
+def retrieve_mpesa(request_id):
+    con.execute('CREATE TABLE IF NOT EXISTS mpesa(email TEXT,amount TEXT,request_id TEXT,status TEXT,date DATETIME);')
+    cursor.execute('SELECT status from mpesa WHERE request_id = ?;',(request_id,))
+    return cursor.fetchone()
+
+
+
+
 # from datetime import datetime
 # date=datetime.now().strftime("%d/%m/%Y")
 # print(select_number_of_inv(("Live",str(date))))
 #print(retrieve_user_phone(email))
 
 #print(retrieve_wallet("samwel@gmail.com")[0])
+
+
+
+update_activate(("ACTIVATED","sam@gmail.com"))
+

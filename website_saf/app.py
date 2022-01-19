@@ -2,6 +2,7 @@
 import email
 from math import remainder
 import re
+from traceback import StackSummary
 from flask import Flask,render_template,request,redirect,url_for,flash,session
 import os
 from flask.globals import current_app
@@ -218,15 +219,21 @@ def fund():
             lipa=MpesaExpress()
             stkpush=lipa.stk_push(amount=str(fund_cash),phone_number=phone)
             flash("Payment request has been sent to your number")
-            # time.sleep(10)
-            # check_stkpush=lipa.query(checkout_request_id=stkpush["CheckoutRequestID"])
-            # if check_stkpush["Body"]["stkCallback"]["ResultCode"]!=0:
-            #     flash("Unable to receive funds")
-            # else:
-            #     wallet = int(wallet) + int(fund_cash)
-            #     update_wallet((wallet,session['email']))
-            #     flash("Your account has been credited with " + str(fund_cash))
-            #     #insert_transactions((session['email'],'Fund Account',fund_cash,the_date,maturity_date))
+            time.sleep(35)
+            check_stkpush=lipa.query(checkout_request_id=stkpush["CheckoutRequestID"])
+            #check_stkpush=lipa.query(checkout_request_id="ws_CO_190120220940204345")
+            if "ResultCode" in check_stkpush:
+
+                if check_stkpush["ResultCode"]!="0":
+                    flash("Unable to receive funds")
+                else:
+                    #insert_mpesa((session['email'],fund_cash,stkpush["CheckoutRequestID"],"SUCCESS",the_date))
+                    wallet = int(wallet) + int(fund_cash)
+                    update_wallet((wallet,session['email']))
+                    flash("Your account has been credited with " + str(fund_cash))
+                    
+            else:
+                flash("An error occured. Refresh Page and try again.")#insert_transactions((session['email'],'Fund Account',fund_cash,the_date,maturity_date))
     return render_template('fund_acct.html')
 
 @app.route('/invest',methods =["GET","POST"])
@@ -276,7 +283,65 @@ def invest():
                 else:
                     flash("You have exhausted today \'s investment opportunities")
     return render_template('invest.html')    
+
+"""============================================ACTIVATE ACCOUNT======================"""
+# @app.route('/activate',methods =["GET","POST"])
+# def activate():
+#     acc_status=retrieve_activate(session['email'])[0]
+#     phone=retrieve_user_phone(session['email'])
     
+#     if acc_status=="DEACTIVATED":
+#         status="0"
+#     else:
+#         status="1"
+#     return render_template("activate.html",status=status)
+
+
+
+
+@app.route('/activate',methods =["GET","POST"])
+def activate():
+    acc_status=retrieve_activate(session['email'])[0]
+    if acc_status=="DEACTIVATED":
+        status="0"
+    else:
+        status="1"
+    if request.method == "POST":
+        status="3"
+
+        
+        phone=retrieve_user_phone(session['email'])
+        
+        if acc_status=="DEACTIVATED":
+            lipa=MpesaExpress()
+            stkpush=lipa.stk_push(amount="1",phone_number=phone)
+            if stkpush["ResponseCode"]=="0":
+                flash("Activation fee payment request has been sent to your number")
+            #time.sleep(35)
+            check_stkpush=lipa.query(checkout_request_id=stkpush["CheckoutRequestID"])
+            if "errorCode" not in check_stkpush:
+                if check_stkpush["ResultCode"]!="0":
+                    flash("Account not activated. Try again ")
+                    status="0"
+                    return redirect("/activate")
+                else:
+                    status="1"
+                    update_activate(("ACTIVATED",session['email']))
+                    time.sleep(2)
+                    flash("Account activated.")
+                    time.sleep(2)
+                    return redirect('/dashboard')
+            else:
+                status="3"  
+                return redirect("/activate")
+        else:
+            status="1"
+
+
+    return render_template('activate.html',status=status)
+
+
+
 @app.route('/credentials',methods =["GET","POST"])
 def mpepe():
     return render_template('mpesa.html')          
