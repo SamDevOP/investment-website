@@ -309,7 +309,8 @@ def invest():
 
 @app.route('/activate',methods =["GET","POST"])
 def activate():
-    acc_status=retrieve_activate(session['email'])[0]
+    if len(retrieve_activate(session['email']))>0:
+        acc_status=retrieve_activate(session['email'])[0]
     if acc_status=="DEACTIVATED":
         status="0"
     else:
