@@ -85,7 +85,7 @@ def insert_wallet(w_data):
 def retrieve_wallet(email):
     con.execute('CREATE TABLE IF NOT EXISTS wallet(email TEXT PRIMARY KEY,wallet_ammount INT);')
     cursor.execute('SELECT wallet_ammount from wallet WHERE email = ?',(email,))
-    return cursor.fetchone()
+    return cursor.fetchone()[0]
 
 def update_wallet(wt_data):
     con.execute('UPDATE wallet SET wallet_ammount  = ? WHERE email = ?',wt_data)

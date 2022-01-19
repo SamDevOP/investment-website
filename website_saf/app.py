@@ -115,7 +115,7 @@ def dashboard():
     else:
 
         my_records= retrieve_investing(session['email'])
-        wallet = int(retrieve_wallet(session['email'])[0])
+        wallet = int(retrieve_wallet(session['email']))
         if len(my_records)==0:
             amount_invested= 0
             expected_income=  0
