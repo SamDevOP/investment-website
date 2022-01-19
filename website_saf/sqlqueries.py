@@ -193,5 +193,5 @@ def retrieve_mpesa(request_id):
 
 
 
-update_activate(("ACTIVATED","sam@gmail.com"))
+#update_activate(("ACTIVATED","sam@gmail.com"))
 
