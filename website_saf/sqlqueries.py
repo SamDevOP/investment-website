@@ -72,6 +72,7 @@ def generate_refer_code(mail,phone):
     return refer_code
 ##get referal code from users table
 def retrieve_referal_code(email):
+    con.execute('CREATE TABLE IF NOT EXISTS users (email TEXT PRIMARY KEY,phone TEXT,passcode VARCHAR NOT NULL,referal_code TEXT);')
     cursor.execute('SELECT referal_code from users WHERE email = ?',(email,))
     return cursor.fetchone()[0]
 
@@ -115,6 +116,7 @@ def retrieve_user_refcode():
     return cursor.fetchall()
 
 def retrieve_user_email(code):
+    con.execute('CREATE TABLE IF NOT EXISTS users (email TEXT PRIMARY KEY,phone TEXT,passcode VARCHAR NOT NULL,referal_code TEXT);')
     cursor.execute('SELECT email from users WHERE referal_code= ?;',(code,))
     return cursor.fetchone()
 
