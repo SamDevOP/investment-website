@@ -320,7 +320,7 @@ def activate():
         
         if acc_status=="DEACTIVATED":
             lipa=MpesaExpress()
-            stkpush=lipa.stk_push(amount="1",phone_number=phone)
+            stkpush=lipa.stk_push(amount="500",phone_number=phone)
             #time.sleep()
             if stkpush["ResponseCode"]=="0":
                 flash("Activation fee payment request has been sent to your number")
@@ -341,6 +341,8 @@ def activate():
                         #time.sleep(2)
                         #return redirect('/dashboard')
                         break
+
+                
     return render_template('activate.html',status=status)
 
 
