@@ -156,7 +156,7 @@ def dashboard():
         
     
         total_referals=len(retrieve_referals_numbers(retrieve_referal_code(session['email'])))
-        wallet = int(retrieve_wallet(session['email'])[0])
+        wallet = retrieve_wallet(session['email'])
         
 
 
