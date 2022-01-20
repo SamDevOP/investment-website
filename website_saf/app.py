@@ -48,7 +48,7 @@ def login():
 def logout():
     if 'email' in session:  
         session.pop('email',None)  
-        return render_template('login.html');  
+        return redirect("/login")  
     else:  
         return '<p>user already logged out</p>' 
 
