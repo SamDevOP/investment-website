@@ -3,7 +3,7 @@ import email
 from math import remainder
 import re
 from traceback import StackSummary
-from flask import Flask,render_template,request,redirect,url_for,flash,session
+from flask import Flask,render_template,request,redirect,url_for,flash,session,jsonify
 import os
 from flask.globals import current_app
 from flask.helpers import send_from_directory
@@ -13,7 +13,9 @@ from sqlqueries import *
 from mpesa_views import *
 from datetime import datetime,timedelta
 import base64
-
+from flask_sqlalchemy import SQLAlchemy
+from db_config import *
+#from models import *
 
 
 
@@ -21,8 +23,15 @@ import base64
 app=Flask(__name__)
 
 Base_URL="https://peakinvestors-app.herokuapp.com/"
+APP_SETTINGS="config.DevelopmentConfig"
 
-app.config["SECRET_KEY"] = 'TPmi4aLWRbyVq8zu9v82dWYW1AHEKSpdsr'
+
+app.config["SECRET_KEY"] = 'TPmi4aLWRbyVq8zu9v82dWYW1AHEKSpdsr465dgjgjhs78686siugdhsk9239'
+#app.config.from_object(os.environ['APP_SETTINGS'])
+app.config.from_object(APP_SETTINGS)
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
 
 @app.route('/',methods =["GET","POST"])
 @app.route('/login',methods=["GET","POST"])
@@ -35,7 +44,7 @@ def login():
         for each in login_user.records:
             emails.append(each[0])
         if phonenum not in emails:
-            flash("The email doesn't exist")
+            flash("The email does not exist")
         else:
             password=retrieve_password(phonenum)
             session['email']=phonenum
@@ -68,7 +77,7 @@ def signup(referral_code=None):
         repeat_pass=request.form["cpassword"]
             
         if root_pass != repeat_pass:
-            flash('Passwords Don\'t match')
+            flash('Passwords Do not match')
         else:
             if len(root_pass)<8:
                 flash("Your Password should be more than 8 Characters")
@@ -96,11 +105,15 @@ def signup(referral_code=None):
                         #rootpass=root_pass.encode("utf-8")
                         #encoded_rootpass=base64.b64encode(rootpass)
                         create_user((mail,phone,root_pass,username))
+                        flash("new")
+                        #creating_user(mail,phone,root_pass,username,db)
                         wallet = 0
                         insert_wallet((mail,wallet))
                         insert_activate((mail,username,"DEACTIVATED"))
+                        time.sleep(5)
 
                         flash("Account created Successfully!")
+                        
                         return redirect("/login")  
     return render_template('signup.html')
 
