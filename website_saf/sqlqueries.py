@@ -1,10 +1,11 @@
 import sqlite3 as sql3
 from flask import Flask,render_template,request,redirect,url_for,flash,session
-
+import os
 from random import randint
 
-
-non_normalized_db_filename='spin_pesa'
+SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+non_normalized_db_filename='sqlite:///peakinvestors.sqlite3'
+#non_normalized_db_filename='spin_pesa'
 
 con = sql3.connect(non_normalized_db_filename,check_same_thread=False)
 cursor = con.cursor()

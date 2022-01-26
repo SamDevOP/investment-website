@@ -30,7 +30,7 @@ app.config["SECRET_KEY"] = 'TPmi4aLWRbyVq8zu9v82dWYW1AHEKSpdsr465dgjgjhs78686siu
 #app.config.from_object(os.environ['APP_SETTINGS'])
 app.config.from_object(APP_SETTINGS)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+
 
 
 @app.route('/',methods =["GET","POST"])
