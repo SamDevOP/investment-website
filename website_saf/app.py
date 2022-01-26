@@ -14,7 +14,7 @@ from mpesa_views import *
 from datetime import datetime,timedelta
 import base64
 from flask_sqlalchemy import SQLAlchemy
-from db_config import *
+#from db_config import *
 #from models import *
 
 
