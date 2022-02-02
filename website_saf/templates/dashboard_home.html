@@ -135,11 +135,13 @@
                                 ⚡︎ Volt Dashboard
                             </a>
                         </li>-->
-                        <li class="nav-item">
-                            <a class="btn btn-sm btn-primary ml-3 mt-2" href="{{url_for('activate')}}">
-                                Activate Account 
-                            </a>
-                        </li> 
+                        {%if account_status==1%}
+                          <li class="nav-item">
+                              <a class="btn btn-sm btn-primary ml-3 mt-2" href="{{url_for('activate')}}">
+                                  Activate Account 
+                              </a>
+                          </li> 
+                        {%endif%}
                       </ul>
                 </div>
             </nav>
@@ -203,11 +205,11 @@
                                     <table class="table">
                                         <thead>
                                           <tr>
-                                            <th scope="col">Amount transacted</th>
+                                            <th scope="col">Reference ID</th>
                                             <th scope="col">Maturity date</th>
                                             <th scope="col">Investment Date</th>
                                             <!-- <th scope="col">Total</th>-->
-                                            <th scope="col">Remaining time</th>
+                                            <th scope="col">Amount transacted</th>
                                             <th scope="col">Status</th> 
                                           </tr>
                                         </thead>
@@ -216,22 +218,21 @@
                                           {%  for all in my_records %}
 
                                           
-                                            {% if all[4]== 'Done'%}
+                                            {% if all.status== 'Done'%}
                                             <tr>
-                                              <th scope="row" >{{ all[1] }}</th>
-                                              <td>{{ all[2] }}</td>
-                                              <td>{{ all[3] }}</td>
-                                              <td>{{remaining_time}}</td> 
-                                              <td><a href="#" class="btn btn-primary">{{all[4]}}</a></td>
+                                              <th scope="row" >{{ all.invest_id  }}</th>
+                                              <td>{{ all.maturity_date }}</td>
+                                              <td>{{ all.investment_date }}</td>
+                                              <td>{{all.amount}}</td> 
+                                              <td><a href="#" class="btn btn-secondary">{{all.status}}</a></td>
                                             </tr>
                                             {% else %}
                                             <tr>
-                                              <th scope="row">{{ all[1] }}</th>
-                                              <td>{{ all[2] }}</td>
-                                              <td>{{ all[3] }}</td>
-                                              <!-- <td>€61.11</td>-->
-                                              <td>{{remaining_time}}</td> 
-                                              <td><a href="#" class="btn btn-success">{{all[4]}}</a></td>
+                                              <th scope="row" >{{ all.invest_id  }}</th>
+                                              <td>{{ all.maturity_date }}</td>
+                                              <td>{{ all.investment_date }}</td>
+                                              <td>{{all.amount}}</td> 
+                                              <td><a href="#" class="btn btn-success">{{all.status}}</a></td>
                                             </tr>
                                             {% endif %}
                                             {% set i=i+1%}

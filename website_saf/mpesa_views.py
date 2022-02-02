@@ -159,8 +159,9 @@ class MpesaExpress(MpesaBase):
 # stkpush=lipa.stk_push(amount="1",phone_number="254798766620")
 
 
-# time.sleep(35)
-# check_stkpush=lipa.query(checkout_request_id=stkpush["CheckoutRequestID"])
-#check_stkpush=lipa.query(checkout_request_id="ws_CO_190120220940204345")
+# # time.sleep(35)
+# check_stkpush=lipa.query(checkout_request_id="ws_CO_010220221355142049")
+# print("\n")
+# check_stkpush=lipa.query(checkout_request_id="ws_CO_010220221359413821")
 #"ws_CO_190120220940204345"
 #            "ResultCode": "1032","ResultCode": "0"
