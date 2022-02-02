@@ -10,7 +10,7 @@ from flask.globals import current_app
 from flask.helpers import send_from_directory
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
-from sqlqueries import *
+#from sqlqueries import *
 from mpesa_views import *
 from datetime import datetime,timedelta
 import base64
@@ -36,6 +36,7 @@ if ENV=="dev":
 else:
     app.debug==False
     Base_URL="https://peakinvestors.co.ke/"
+    app.config['SQLALCHEMY_DATABASE_URI']=""
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
