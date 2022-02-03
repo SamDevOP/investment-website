@@ -1,4 +1,4 @@
-from models import User,Wallet,Referals,Investing,Activate
+from models import User,Wallet,Referals,Investing,Activate,Mpesax
 
 
 
