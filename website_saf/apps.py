@@ -20,7 +20,8 @@ if ENV=="dev":
 else:
     app.debug==False
     Base_URL="https://peakinvestors.co.ke/"
-    app.config['SQLALCHEMY_DATABASE_URI']=os.environ.get("DATABASE_URL")
+    app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('DATABASE_URL').replace("://", "ql://", 1) 
+    print(app.config['SQLALCHEMY_DATABASE_URI'])
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
