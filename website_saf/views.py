@@ -344,42 +344,47 @@ def invest():
         if session['email'] == "":
             return redirect(url_for('login'))
         else:
+            account_status =active()
+            if account_status!=1:
 
-            my_data = db.session.query(Investing).filter(Investing.email==session["email"]).count()
 
-            wallet=db.session.query(Wallet).filter(Wallet.email==session["email"]).first()
+                my_data = db.session.query(Investing).filter(Investing.email==session["email"]).count()
 
-            if db.session.query(Investing).filter(Investing.email==session["email"]).count()==0:
-                inv_id=inv_id + str(my_data)
-                if int(fund_cash)> int(wallet.wallet_ammount):
-                    flash("You have insufficient balance to complete the investment")
-                    return redirect('/fund')
-                else:
-                    inserting_invest=Investing(session['email'],fund_cash,maturity_date,investment_date,'Live',date,'NO',inv_id)
-                    commit_data(inserting_invest)
+                wallet=db.session.query(Wallet).filter(Wallet.email==session["email"]).first()
 
-                    
-                    wallet.wallet_ammount=int(wallet.wallet_ammount)-int(fund_cash)
-                    db.session.commit()                    
-                    flash("You have invested " + str(fund_cash))
-                    
-            else:
-                inv_id=inv_id + str(my_data)
-                if db.session.query(Investing).filter(Investing.email==session["email"],Investing.date==the_date,Investing.status=="Live").count()<=2:
-                    
+                if db.session.query(Investing).filter(Investing.email==session["email"]).count()==0:
+                    inv_id=inv_id + str(my_data)
                     if int(fund_cash)> int(wallet.wallet_ammount):
                         flash("You have insufficient balance to complete the investment")
                         return redirect('/fund')
                     else:
-                        insert_invest=Investing(session['email'],fund_cash,maturity_date,investment_date,'Live',date,'NO',inv_id)
-                        commit_data(insert_invest)
+                        inserting_invest=Investing(session['email'],fund_cash,maturity_date,investment_date,'Live',date,'NO',inv_id)
+                        commit_data(inserting_invest)
 
+                        
                         wallet.wallet_ammount=int(wallet.wallet_ammount)-int(fund_cash)
-                        db.session.commit()
-
+                        db.session.commit()                    
                         flash("You have invested " + str(fund_cash))
+                        
                 else:
-                    flash("You have exhausted your investment opportunities for today")
+                    inv_id=inv_id + str(my_data)
+                    if db.session.query(Investing).filter(Investing.email==session["email"],Investing.date==the_date,Investing.status=="Live").count()<=2:
+                        
+                        if int(fund_cash)> int(wallet.wallet_ammount):
+                            flash("You have insufficient balance to complete the investment")
+                            return redirect('/fund')
+                        else:
+                            insert_invest=Investing(session['email'],fund_cash,maturity_date,investment_date,'Live',date,'NO',inv_id)
+                            commit_data(insert_invest)
+
+                            wallet.wallet_ammount=int(wallet.wallet_ammount)-int(fund_cash)
+                            db.session.commit()
+
+                            flash("You have invested " + str(fund_cash))
+                    else:
+                        flash("You have exhausted your investment opportunities for today")
+            else:
+                flash("Activate account to invest")
     return render_template('invest.html',account_status =active())    
 
 
