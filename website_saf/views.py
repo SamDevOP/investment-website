@@ -274,7 +274,6 @@ def withdraw():
 @app.route('/fund',methods =["GET","POST"])
 def fund():
     if request.method == "POST":
-
         fund_cash = request.form["fund_cash"]
         #the_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         #add Mpesa transaction information here
