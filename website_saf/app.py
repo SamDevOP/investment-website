@@ -42,6 +42,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db=SQLAlchemy(app)
 
+import models
+
 def commit_data(data):
     db.session.add(data)
     db.session.commit()
