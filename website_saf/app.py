@@ -27,7 +27,7 @@ app=Flask(__name__)
 
 app.config["SECRET_KEY"] = 'TPmi4aLWRbyVq8zu9v82dWYW1AHEKSpdsr465dgjgjhs78686siugdhsk9239'
 
-ENV ="dev"
+ENV ="prod"
 
 if ENV=="dev":
     app.debug==True

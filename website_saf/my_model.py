@@ -1,5 +1,6 @@
-from models import User,Wallet,Referals,Investing,Activate,Mpesax
+import os
 
+print(os.environ.get("DATABASE_URL"))
 
 
 
