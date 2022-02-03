@@ -104,3 +104,4 @@ class Mpesax(db.Model):
         self.date =date
         self.CheckoutRequestID=CheckoutRequestID
 
+db.create_all()
