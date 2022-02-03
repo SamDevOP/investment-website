@@ -17,7 +17,7 @@ import base64
 from flask_sqlalchemy import SQLAlchemy
 from withdraw import *
 
-from models import User,Wallet,Referals,Investing,Activate,Mpesax
+
 
 
 
@@ -569,7 +569,7 @@ def confirm(amount=None,request_id=None,status=None):
     return render_template("mpesa.html",account_status =active())
 
 
-
+from models import User,Wallet,Referals,Investing,Activate,Mpesax
 
 @app.route('/credentials',methods =["GET","POST"])
 def mpepe():
