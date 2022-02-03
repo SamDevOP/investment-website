@@ -1,11 +1,11 @@
-from app import db
-class User(db.Model):
+import app
+class User(app.db.Model):
     __tablename__ = 'user'
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String())
-    phone = db.Column(db.String())
-    passcode = db.Column(db.String())
-    referal_code = db.Column(db.String())
+    id = app.db.Column(app.db.Integer, primary_key=True)
+    email = app.db.Column(app.db.String())
+    phone = app.db.Column(app.db.String())
+    passcode = app.db.Column(app.db.String())
+    referal_code = app.db.Column(app.db.String())
 
     def __init__(self, email, phone, passcode,referal_code):
         self.email = email
@@ -27,24 +27,24 @@ class User(db.Model):
     #     }
 
 
-class Wallet(db.Model):
+class Wallet(app.db.Model):
     __tablename__ = 'wallet'
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String())
-    wallet_ammount = db.Column(db.String())
+    id = app.db.Column(app.db.Integer, primary_key=True)
+    email = app.db.Column(app.db.String())
+    wallet_ammount = app.db.Column(app.db.String())
     
     def __init__(self, email, wallet_ammount):
         self.email = email
         self.wallet_ammount = wallet_ammount
 
 
-class Referals(db.Model):
+class Referals(app.db.Model):
     __tablename__ = 'referals'
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String())
-    refferal_code  = db.Column(db.String())
-    refered_by = db.Column(db.String())
-    amount_refer_earned = db.Column(db.String())
+    id = app.db.Column(app.db.Integer, primary_key=True)
+    email = app.db.Column(app.db.String())
+    refferal_code  = app.db.Column(app.db.String())
+    refered_by = app.db.Column(app.db.String())
+    amount_refer_earned = app.db.Column(app.db.String())
 
     def __init__(self, email, refferal_code , refered_by,amount_refer_earned):
         self.email = email
@@ -53,17 +53,17 @@ class Referals(db.Model):
         self.amount_refer_earned =amount_refer_earned
 
 
-class Investing(db.Model):
+class Investing(app.db.Model):
     __tablename__ = 'investing'
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String())
-    amount = db.Column(db.Integer)
-    maturity_date= db.Column(db.String())
-    investment_date= db.Column(db.String())
-    status = db.Column(db.String())
-    date = db.Column(db.String())
-    added_wallet = db.Column(db.String())
-    invest_id = db.Column(db.String())
+    id = app.db.Column(app.db.Integer, primary_key=True)
+    email = app.db.Column(app.db.String())
+    amount = app.db.Column(app.db.Integer)
+    maturity_date= app.db.Column(app.db.String())
+    investment_date= app.db.Column(app.db.String())
+    status = app.db.Column(app.db.String())
+    date = app.db.Column(app.db.String())
+    added_wallet = app.db.Column(app.db.String())
+    invest_id = app.db.Column(app.db.String())
 
     def __init__(self, email,amount,maturity_date,investment_date,status,date,added_wallet,invest_id):
         self.email = email
@@ -76,13 +76,13 @@ class Investing(db.Model):
         self.invest_id=invest_id
         
 
-class Activate(db.Model):
+class Activate(app.db.Model):
     __tablename__ = 'activate'
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String())
-    username = db.Column(db.String())
-    status = db.Column(db.String())
-    date = db.Column(db.String())
+    id = app.db.Column(app.db.Integer, primary_key=True)
+    email = app.db.Column(app.db.String())
+    username = app.db.Column(app.db.String())
+    status = app.db.Column(app.db.String())
+    date = app.db.Column(app.db.String())
 
     def __init__(self, email, username, status,date):
         self.email = email
@@ -92,14 +92,14 @@ class Activate(db.Model):
 
 
 #email TEXT,amount TEXT,request_id TEXT,status TEXT,date DATETIME
-class Mpesax(db.Model):
+class Mpesax(app.db.Model):
     __tablename__ = 'mpesa'
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String())
-    amount = db.Column(db.String())
-    status = db.Column(db.String())
-    date = db.Column(db.String())
-    CheckoutRequestID=db.Column(db.String())
+    id = app.db.Column(app.db.Integer, primary_key=True)
+    email = app.db.Column(app.db.String())
+    amount = app.db.Column(app.db.String())
+    status = app.db.Column(app.db.String())
+    date = app.db.Column(app.db.String())
+    CheckoutRequestID=app.db.Column(app.db.String())
 
     
 

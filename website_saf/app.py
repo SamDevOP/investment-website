@@ -18,7 +18,7 @@ from flask_sqlalchemy import SQLAlchemy
 from withdraw import *
 
 #from db_config import *
-from models import *
+import models
 
 
 
@@ -48,7 +48,7 @@ def commit_data(data):
 
 
 def active():
-    active_account=db.session.query(Activate).filter(Activate.email==session["email"]).first()
+    active_account=db.session.query(models.Activate).filter(models.Activate.email==session["email"]).first()
     if active_account.status=="DEACTIVATED":
         account_status=1
     else:
@@ -67,7 +67,7 @@ def login():
     if request.method== "POST":
         phonenum=request.form["email"]
         pass_code=request.form["password"]
-        person=db.session.query(User).filter(User.email==phonenum).first()
+        person=db.session.query(models.User).filter(models.User.email==phonenum).first()
         if person.passcode==pass_code:
             session["email"]=person.email
             #return redirect('/dashboard')
@@ -85,7 +85,7 @@ def logout():
         session.pop('email',None)  
         return redirect("/login")  
     else:  
-        return '<p>user already logged out</p>' 
+        return '<p>models.User already logged out</p>' 
 
 
 
@@ -100,7 +100,7 @@ def signup(referral_code=None):
     if request.method== "POST":
         mail=request.form["email"]
         phone=request.form["phone"]
-        username = request.form["username"]       
+        models.Username = request.form["models.Username"]       
             #add a fetch all to chech for emails and phone duplication
         root_pass=request.form["password"]
         repeat_pass=request.form["cpassword"]
@@ -113,11 +113,11 @@ def signup(referral_code=None):
             if len(root_pass)<8:
                 flash("Your Password should be more than 8 Characters")
             else:
-                if db.session.query(User).filter(User.referal_code==username).count()!=0:
-                    flash("Username exists. Choose another.")
+                if db.session.query(models.User).filter(models.User.referal_code==models.Username).count()!=0:
+                    flash("models.Username exists. Choose another.")
                 else:
                     #r_code=generate_refer_code(mail,phone)
-                    if db.session.query(User).filter(User.email==mail).count()!=0:
+                    if db.session.query(models.User).filter(models.User.email==mail).count()!=0:
                         flash("Account with that email already exists.")
                     else:
                         if len(phone)!=12:
@@ -125,22 +125,22 @@ def signup(referral_code=None):
                         else:
                             
                             if referral_c!='':    
-                                if db.session.query(User).filter(User.referal_code==referral_c).count()>0:
-                                    create_users=User(mail,phone,root_pass,username)
+                                if db.session.query(models.User).filter(models.User.referal_code==referral_c).count()>0:
+                                    create_users=models.User(mail,phone,root_pass,models.Username)
                                     commit_data(create_users)
 
                                     wallet = 0
-                                    inserting_wallet=Wallet(mail,wallet)
+                                    inserting_wallet=models.Wallet(mail,wallet)
                                     commit_data(inserting_wallet)
                                     
 
-                                    inserting_activate=Activate(mail,username,"DEACTIVATED",join_date)
+                                    inserting_activate=models.Activate(mail,models.Username,"DEACTIVATED",join_date)
                                     commit_data(inserting_activate)
 
-                                    insert_referals_earn=Referals(mail,username,referral_c,200)
+                                    insert_referals_earn=models.Referals(mail,models.Username,referral_c,200)
                                     commit_data(insert_referals_earn)
-                                    wallet_email=db.session.query(User).filter(User.referal_code==referral_c).first()
-                                    r_wallet=db.session.query(Wallet).filter(Wallet.email==wallet_email.email).first()
+                                    wallet_email=db.session.query(models.User).filter(models.User.referal_code==referral_c).first()
+                                    r_wallet=db.session.query(models.Wallet).filter(models.Wallet.email==wallet_email.email).first()
                                     r_wallet.wallet_ammount=int(r_wallet.wallet_ammount) + 200
                                     db.session.commit()
 
@@ -150,15 +150,15 @@ def signup(referral_code=None):
                                     flash("Your link is broken, copy it and try again")
                                     #add error page here
                             else:
-                                create_users=User(mail,phone,root_pass,username)
+                                create_users=models.User(mail,phone,root_pass,models.Username)
                                 commit_data(create_users)
 
                                 wallet = 0
-                                inserting_wallet=Wallet(mail,wallet)
+                                inserting_wallet=models.Wallet(mail,wallet)
                                 commit_data(inserting_wallet)
 
-                                inserting_activate=Activate(mail,username,"DEACTIVATED",join_date)
-                                #inserting_activate=Activate("rectangularsolutions@protonmail.com","rectangle","DEACTIVATED",join_date)
+                                inserting_activate=models.Activate(mail,models.Username,"DEACTIVATED",join_date)
+                                #inserting_activate=models.Activate("rectangularsolutions@protonmail.com","rectangle","DEACTIVATED",join_date)
                                 commit_data(inserting_activate)
                             
 
@@ -176,9 +176,9 @@ def dashboard():
 
     else:
 
-        my_records= db.session.query(Investing).filter(Investing.email==session['email']).all()
+        my_records= db.session.query(models.Investing).filter(models.Investing.email==session['email']).all()
        
-        if db.session.query(Investing).filter(Investing.email==session['email']).count()==0:
+        if db.session.query(models.Investing).filter(models.Investing.email==session['email']).count()==0:
             amount_invested= 0
             expected_income=  0
             #invest_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -208,9 +208,9 @@ def dashboard():
 
                     
             
-            wallet = db.session.query(Wallet).filter(Wallet.email==session['email']).first()
+            wallet = db.session.query(models.Wallet).filter(models.Wallet.email==session['email']).first()
             print(type(int(wallet.wallet_ammount)))
-            my_records= db.session.query(Investing).filter(Investing.email==session['email']).all()
+            my_records= db.session.query(models.Investing).filter(models.Investing.email==session['email']).all()
             for all in my_records:
                 if all.status=="Live" and all.added_wallet=="NO":
                     total_invested.append(all.amount)
@@ -230,9 +230,9 @@ def dashboard():
             amount_invested=sum(total_invested)
     
         
-        refered_by=db.session.query(User).filter(User.email==session['email']).first()
-        total_referals=db.session.query(Referals).filter(Referals.refered_by==refered_by.referal_code).count()
-        wallet =  wallet = db.session.query(Wallet).filter(Wallet.email==session['email']).first()
+        refered_by=db.session.query(models.User).filter(models.User.email==session['email']).first()
+        total_referals=db.session.query(models.Referals).filter(models.Referals.refered_by==refered_by.referal_code).count()
+        wallet =  wallet = db.session.query(models.Wallet).filter(models.Wallet.email==session['email']).first()
 
 
     return render_template('dashboard_home.html',my_records=my_records,expected_income=expected_income,\
@@ -248,7 +248,7 @@ def refer():
         return redirect("/login")
     else:
         mail=session['email']
-        refer_=db.session.query(User).filter(User.email==mail).first()
+        refer_=db.session.query(models.User).filter(models.User.email==mail).first()
 
         referral_link=Base_URL+refer_.referal_code
     
@@ -260,12 +260,12 @@ def withdraw():
     if request.method == "POST":
         withdrawn_cash = int(request.form["withdraw_cash"])
         #the_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        wallet=db.session.query(Wallet).filter(Wallet.email==session['email']).first()
-        phone_num=db.session.query(User).filter(User.email==session['email']).first()
-        status=db.session.query(Activate).filter(Activate.email==session['email']).first()
+        wallet=db.session.query(models.Wallet).filter(models.Wallet.email==session['email']).first()
+        phone_num=db.session.query(models.User).filter(models.User.email==session['email']).first()
+        status=db.session.query(models.Activate).filter(models.Activate.email==session['email']).first()
         print(os.environ.get("DATABASE_URL"))
         if status.status == "DEACTIVATED":
-            flash("Activate account to be able to invest")
+            flash("models.Activate account to be able to invest")
         else:
             if withdrawn_cash<=1000:
                 transaction_cost=30
@@ -279,7 +279,7 @@ def withdraw():
                 cash_out=B2C()
                 cashOut=cash_out.transact(initiator_name=session["email"],amount="1",party_b=phone_num.phone)
                 if cashOut["ResponseCode"] == "0":
-                    mpepe=Mpesax(session['email'],withdrawn_cash,"WITHDRAWAL",datetime.now().strftime("%d/%m/%Y %H:%M:%S"),"")
+                    mpepe=models.Mpesax(session['email'],withdrawn_cash,"WITHDRAWAL",datetime.now().strftime("%d/%m/%Y %H:%M:%S"),"")
                     wallet.wallet_ammount = int(wallet.wallet_ammount) - withdraw_cash
                     db.session.commit()
                     flash("Withdrawn " + str(withdrawn_cash) + " Cost of Transaction: "+ str(transaction_cost) )
@@ -294,19 +294,19 @@ def fund():
         fund_cash = request.form["fund_cash"]
         #the_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         #add Mpesa transaction information here
-        phone_num=db.session.query(User).filter(User.email==session['email']).first()
+        phone_num=db.session.query(models.User).filter(models.User.email==session['email']).first()
         
-        acc_status=db.session.query(Activate).filter(Activate.email==session['email']).first()
+        acc_status=db.session.query(models.Activate).filter(models.Activate.email==session['email']).first()
         lipa=MpesaExpress()
         if acc_status.status == "DEACTIVATED":
-            flash("Activate account to be able to invest")
+            flash("models.Activate account to be able to invest")
         else:
             stkpush=lipa.stk_push(amount=str(fund_cash),phone_number=phone_num.phone)
             if "ResponseCode" in stkpush:
                 if stkpush["ResponseCode"] ==  "0":
                     time.sleep(2)
                     flash("Payment request has been sent to your number")
-                    mpepe=Mpesax(session['email'],fund_cash, "0", date=datetime.now().strftime("%d/%m/%Y %H:%M:%S"), CheckoutRequestID=stkpush["CheckoutRequestID"])
+                    mpepe=models.Mpesax(session['email'],fund_cash, "0", date=datetime.now().strftime("%d/%m/%Y %H:%M:%S"), CheckoutRequestID=stkpush["CheckoutRequestID"])
                     commit_data(mpepe)
                     return redirect(url_for('confirm_funds',amount=fund_cash,request_id=stkpush["CheckoutRequestID"],status="0",**request.args))
                             #return redirect("/confirm_payment")
@@ -328,8 +328,8 @@ def confirm_funds(amount=None,request_id=None,status=None):
     else:
         flash("Can not Confirm payment")
     if request.method =="POST":
-        wallet=db.session.query(Wallet).filter(Wallet.email==session['email']).first()
-        RequestID=db.session.query(Mpesax).filter(Mpesax.email==session['email'],Mpesax.CheckoutRequestID==requested_id,Mpesax.status==state,Mpesax.amount==amount_sent).first()
+        wallet=db.session.query(models.Wallet).filter(models.Wallet.email==session['email']).first()
+        RequestID=db.session.query(models.Mpesax).filter(models.Mpesax.email==session['email'],models.Mpesax.CheckoutRequestID==requested_id,models.Mpesax.status==state,models.Mpesax.amount==amount_sent).first()
         lipa=MpesaExpress()
         check_stkpush=lipa.query(checkout_request_id=RequestID.CheckoutRequestID)
         #check_stkpush=lipa.query(checkout_request_id="ws_CO_010220221355142049")
@@ -361,17 +361,17 @@ def invest():
             return redirect(url_for('login'))
         else:
 
-            my_data = db.session.query(Investing).filter(Investing.email==session["email"]).count()
+            my_data = db.session.query(models.Investing).filter(models.Investing.email==session["email"]).count()
 
-            wallet=db.session.query(Wallet).filter(Wallet.email==session["email"]).first()
+            wallet=db.session.query(models.Wallet).filter(models.Wallet.email==session["email"]).first()
 
-            if db.session.query(Investing).filter(Investing.email==session["email"]).count()==0:
+            if db.session.query(models.Investing).filter(models.Investing.email==session["email"]).count()==0:
                 inv_id=inv_id + str(my_data)
                 if int(fund_cash)> int(wallet.wallet_ammount):
                     flash("You have insufficient balance to complete the investment")
                     return redirect('/fund')
                 else:
-                    inserting_invest=Investing(session['email'],fund_cash,maturity_date,investment_date,'Live',date,'NO',inv_id)
+                    inserting_invest=models.Investing(session['email'],fund_cash,maturity_date,investment_date,'Live',date,'NO',inv_id)
                     commit_data(inserting_invest)
 
                     
@@ -381,13 +381,13 @@ def invest():
                     
             else:
                 inv_id=inv_id + str(my_data)
-                if db.session.query(Investing).filter(Investing.email==session["email"],Investing.date==the_date,Investing.status=="Live").count()<=2:
+                if db.session.query(models.Investing).filter(models.Investing.email==session["email"],models.Investing.date==the_date,models.Investing.status=="Live").count()<=2:
                     
                     if int(fund_cash)> int(wallet.wallet_ammount):
                         flash("You have insufficient balance to complete the investment")
                         return redirect('/fund')
                     else:
-                        insert_invest=Investing(session['email'],fund_cash,maturity_date,investment_date,'Live',date,'NO',inv_id)
+                        insert_invest=models.Investing(session['email'],fund_cash,maturity_date,investment_date,'Live',date,'NO',inv_id)
                         commit_data(insert_invest)
 
                         wallet.wallet_ammount=int(wallet.wallet_ammount)-int(fund_cash)
@@ -406,16 +406,16 @@ def invest():
 @app.route('/activate',methods =["GET","POST"])
 def activate():
     if request.method == "POST":
-        #acc_status=acc_status=db.session.query(Activate).filter(Activate.email==session['email']).first()
+        #acc_status=acc_status=db.session.query(models.Activate).filter(models.Activate.email==session['email']).first()
         
-        phone_num=db.session.query(User).filter(User.email==session['email']).first()
+        phone_num=db.session.query(models.User).filter(models.User.email==session['email']).first()
         lipa=MpesaExpress()
         stkpush=lipa.stk_push(amount="500",phone_number=phone_num.phone)
             #time.sleep()
         if stkpush["ResponseCode"]=="0":
             time.sleep(2)
             flash("Activation fee payment request has been sent to your number")
-            mpepe=Mpesax(session['email'],"500", "0", date=datetime.now().strftime("%d/%m/%Y %H:%M:%S"), CheckoutRequestID=stkpush["CheckoutRequestID"])
+            mpepe=models.Mpesax(session['email'],"500", "0", date=datetime.now().strftime("%d/%m/%Y %H:%M:%S"), CheckoutRequestID=stkpush["CheckoutRequestID"])
             commit_data(mpepe)
             return redirect(url_for('confirm',amount=500,request_id=stkpush["CheckoutRequestID"],status="0",**request.args))
         else:
@@ -434,8 +434,8 @@ def confirm(amount=None,request_id=None,status=None):
     else:
         flash("Can not Confirm payment")
     if request.method =="POST":
-        activate_acc=db.session.query(Activate).filter(Activate.email==session['email']).first()
-        RequestID=db.session.query(Mpesax).filter(Mpesax.email==session['email'],Mpesax.CheckoutRequestID==requested_id,Mpesax.status==state,Mpesax.amount==amount_sent).first()
+        activate_acc=db.session.query(models.Activate).filter(models.Activate.email==session['email']).first()
+        RequestID=db.session.query(models.Mpesax).filter(models.Mpesax.email==session['email'],models.Mpesax.CheckoutRequestID==requested_id,models.Mpesax.status==state,models.Mpesax.amount==amount_sent).first()
         lipa=MpesaExpress()
         check_stkpush=lipa.query(checkout_request_id=RequestID.CheckoutRequestID)
         #check_stkpush=lipa.query(checkout_request_id="ws_CO_010220221355142049")
