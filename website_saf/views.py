@@ -46,14 +46,20 @@ def login():
         phonenum=request.form["email"]
         pass_code=request.form["password"]
         person=db.session.query(User).filter(User.email==phonenum).first()
-        if person.passcode==pass_code:
-            session["email"]=person.email
-            #return redirect('/dashboard')
-            return redirect('/referrals')
+        if db.session.query(User).filter(User.email==phonenum).count()==0:
 
-            #print(session["email"])
+            if person.passcode==pass_code:
+                session["email"]=person.email
+                #return redirect('/dashboard')
+                return redirect('/dashboard')
+
+                #print(session["email"])
+            else:
+                flash("Email or Password not correct!")
         else:
-            flash("Email or Password not correct!")
+            flash("You dont have an account!")
+            time.sleep(2)
+            return redirect('/signup')
     return render_template('login.html')
 
 
