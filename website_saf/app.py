@@ -36,7 +36,7 @@ if ENV=="dev":
 else:
     app.debug==False
     Base_URL="https://peakinvestors.co.ke/"
-    app.config['SQLALCHEMY_DATABASE_URI']=""
+    app.config['SQLALCHEMY_DATABASE_URI']=os.environ.get("DATABASE_URL")
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -263,7 +263,7 @@ def withdraw():
         wallet=db.session.query(Wallet).filter(Wallet.email==session['email']).first()
         phone_num=db.session.query(User).filter(User.email==session['email']).first()
         status=db.session.query(Activate).filter(Activate.email==session['email']).first()
-
+        print(os.environ.get("DATABASE_URL"))
         if status.status == "DEACTIVATED":
             flash("Activate account to be able to invest")
         else:
