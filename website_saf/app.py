@@ -18,7 +18,7 @@ from flask_sqlalchemy import SQLAlchemy
 from withdraw import *
 
 #from db_config import *
-from models import *
+from my_model import *
 
 
 
