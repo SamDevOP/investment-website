@@ -46,7 +46,7 @@ def login():
         phonenum=request.form["email"]
         pass_code=request.form["password"]
         person=db.session.query(User).filter(User.email==phonenum).first()
-        if db.session.query(User).filter(User.email==phonenum).count()==0:
+        if db.session.query(User).filter(User.email==phonenum).count()!=0:
 
             if person.passcode==pass_code:
                 session["email"]=person.email
@@ -58,7 +58,7 @@ def login():
                 flash("Email or Password not correct!")
         else:
             flash("You dont have an account!")
-            time.sleep(2)
+            
             return redirect('/signup')
     return render_template('login.html')
 
