@@ -35,6 +35,5 @@ mail="rectangularsolutions@protonmail.com"
 # wallet.wallet_ammount=50000
 # active = db.session.query(Activate).filter(Activate.email==mail).first()
 # active.status="DEACTIVATED"
-active = db.session.query(Investing).filter(Investing.invest_id=="INV05").first()
-active.added_wallet="NO"
-db.session.commit()
+active = db.session.query(User).first()
+print(active.name)
