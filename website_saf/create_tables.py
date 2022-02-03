@@ -33,7 +33,7 @@ mail="rectangularsolutions@protonmail.com"
 
 # wallet=db.session.query(Wallet).filter(Wallet.email==mail).first()
 # wallet.wallet_ammount=50000
-# active = db.session.query(Activate).filter(Activate.email==mail).first()
+active = db.session.query(Activate).filter(Activate.email==mail).first()
 # active.status="DEACTIVATED"
-active = db.session.query(User).first()
-print(active.name)
+#active = User.query().first()
+print(active.email)

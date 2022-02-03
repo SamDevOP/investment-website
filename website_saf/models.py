@@ -1,6 +1,9 @@
 from app import db
+
 class User(db.Model):
+
     __tablename__ = 'user'
+    __table_args__ = {'extend_existing': True} 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String())
     phone = db.Column(db.String())
@@ -16,6 +19,7 @@ class User(db.Model):
 
 class Wallet(db.Model):
     __tablename__ = 'wallet'
+    __table_args__ = {'extend_existing': True} 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String())
     wallet_ammount = db.Column(db.String())
@@ -27,6 +31,7 @@ class Wallet(db.Model):
 
 class Referals(db.Model):
     __tablename__ = 'referals'
+    __table_args__ = {'extend_existing': True} 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String())
     refferal_code  = db.Column(db.String())
@@ -42,6 +47,7 @@ class Referals(db.Model):
 
 class Investing(db.Model):
     __tablename__ = 'investing'
+    __table_args__ = {'extend_existing': True} 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String())
     amount = db.Column(db.Integer)
@@ -65,6 +71,7 @@ class Investing(db.Model):
 
 class Activate(db.Model):
     __tablename__ = 'activate'
+    __table_args__ = {'extend_existing': True} 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String())
     username = db.Column(db.String())
@@ -81,6 +88,7 @@ class Activate(db.Model):
 #email TEXT,amount TEXT,request_id TEXT,status TEXT,date DATETIME
 class Mpesax(db.Model):
     __tablename__ = 'mpesa'
+    __table_args__ = {'extend_existing': True} 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String())
     amount = db.Column(db.String())
@@ -96,5 +104,4 @@ class Mpesax(db.Model):
         self.status = status
         self.date =date
         self.CheckoutRequestID=CheckoutRequestID
-
 
