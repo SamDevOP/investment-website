@@ -1,4 +1,4 @@
 
-from models import *
+from app import db
 
 db.create_all()
