@@ -1,5 +1,6 @@
-from app import db
-
+from apps import app
+from flask_sqlalchemy import SQLAlchemy
+db=SQLAlchemy(app)
 class User(db.Model):
 
     __tablename__ = 'user'
@@ -95,8 +96,6 @@ class Mpesax(db.Model):
     status = db.Column(db.String())
     date = db.Column(db.String())
     CheckoutRequestID=db.Column(db.String())
-
-    
 
     def __init__(self, email, amount, status,date,CheckoutRequestID):
         self.email = email

@@ -37,10 +37,10 @@
 # # active.status="DEACTIVATED"
 # #active = User.query().first()
 # print(active.email)
-from flask_sqlalchemy import SQLAlchemy
+from apps import app
 
-from app import app 
 
-db = SQLAlchemy(app)
+if __name__ == "__main__":
+    app.run()
 
 

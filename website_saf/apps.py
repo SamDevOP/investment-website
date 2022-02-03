@@ -1,4 +1,30 @@
-from models import User,Wallet,Referals,Investing,Activate,Mpesax
+
+from flask import Flask,render_template,request,redirect,url_for,flash,session,jsonify
+import os
+from flask.globals import current_app
+from flask.helpers import send_from_directory
+from werkzeug.datastructures import FileStorage
+from werkzeug.utils import secure_filename
+
+#Initializing flask app
+app=Flask(__name__)
+
+app.config["SECRET_KEY"] = 'TPmi4aLWRbyVq8zu9v82dWYW1AHEKSpdsr465dgjgjhs78686siugdhsk9239'
+
+ENV ="prod"
+
+if ENV=="dev":
+    app.debug==True
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:samis100%code@localhost/peakinvestors'
+    Base_URL="https://peakinvestors-app.herokuapp.com/"
+else:
+    app.debug==False
+    Base_URL="https://peakinvestors.co.ke/"
+    app.config['SQLALCHEMY_DATABASE_URI']=os.environ.get("DATABASE_URL")
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+import views
 
 
 
