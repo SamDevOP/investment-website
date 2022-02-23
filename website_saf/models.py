@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 db=SQLAlchemy(app)
 class User(db.Model):
 
-    __tablename__ = 'investors'
+    __tablename__ = 'Investors'
     __table_args__ = {'extend_existing': True} 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String())
