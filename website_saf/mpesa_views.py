@@ -156,7 +156,7 @@ class MpesaExpress(MpesaBase):
 
 # lipa=MpesaExpress()
 
-# stkpush=lipa.stk_push(amount="1",phone_number="254798766620")
+# stkpush=lipa.stk_push(amount="1",phone_number="254705670653")
 
 
 # # time.sleep(35)

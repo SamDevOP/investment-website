@@ -22,7 +22,7 @@ from models import *
 
 def commit_data(data):
     db.session.add(data)
-    db.session.commit()
+    db.session.commit()   
 
 
 def active():
