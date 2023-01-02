@@ -5,9 +5,9 @@ from mpesa_credentials import *
 class MpesaBase:
     def __init__(
         self,
-        env="sandbox",
-        app_key=None,
-        app_secret=None,
+        env="production",
+        app_key=CONSUMER_KEY,
+        app_secret=CONSUMER_SECRET,
         sandbox_url="https://sandbox.safaricom.co.ke",
         live_url="https://api.safaricom.co.ke",
     ):
@@ -49,17 +49,26 @@ class MpesaBase:
         authenticate_uri = "/oauth/v1/generate?grant_type=client_credentials"
         authenticate_url = "{0}{1}".format(
             base_safaricom_url, authenticate_uri)
+        
+        print(authenticate_url)
         try:
             r = requests.get(
                 authenticate_url, auth=HTTPBasicAuth(
                     self.app_key, self.app_secret)
             )
+           
         except Exception as e:
             r = requests.get(
                 authenticate_url,
                 auth=HTTPBasicAuth(self.app_key, self.app_secret),
                 verify=False,
             )
-        self.token = r.json()["access_token"]
-        print(self.token)
+
+        print(r.text)
         return r.json()["access_token"]
+
+
+
+
+
+

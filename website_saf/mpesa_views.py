@@ -5,11 +5,11 @@ from datetime import datetime
 import time
 from mpesa_credentials import *
 #from test import *
-till="174379"
+till="4081415"
 class MpesaExpress(MpesaBase):
     def __init__(
         self,
-        env="sandbox",
+        env="production",
         app_key=CONSUMER_KEY,
         app_secret=CONSUMER_SECRET,
         sandbox_url="https://sandbox.safaricom.co.ke",
@@ -24,7 +24,7 @@ class MpesaExpress(MpesaBase):
         business_shortcode=till,
         passcode=None,
         amount=None,
-        callback_url='https://mydomain.com/path',
+        callback_url='https://webhook.site/09595412-c7ec-427c-97ce-3eec0d7bd4fb',
         reference_code="Peak Investors",
         phone_number=None,
         description="Peak Investors",
@@ -154,9 +154,11 @@ class MpesaExpress(MpesaBase):
         print(r.text)
         return r.json()
 
-# lipa=MpesaExpress()
+lipa=MpesaExpress()
 
-# stkpush=lipa.stk_push(amount="1",phone_number="254705670653")
+stkpush=lipa.stk_push(amount="1",phone_number="254798766620")
+
+print(stkpush)
 
 
 # # time.sleep(35)
