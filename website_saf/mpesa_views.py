@@ -25,7 +25,7 @@ class MpesaExpress(MpesaBase):
         passcode=None,
         amount=None,
         callback_url='https://webhook.site/09595412-c7ec-427c-97ce-3eec0d7bd4fb',
-        reference_code="Peak Investors",
+        reference_code="991",
         phone_number=None,
         description="Peak Investors",
     ):
