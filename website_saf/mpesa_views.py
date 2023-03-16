@@ -6,10 +6,11 @@ import time
 from mpesa_credentials import *
 #from test import *
 till="4081415"
+till_="174379"
 class MpesaExpress(MpesaBase):
     def __init__(
         self,
-        env="production",
+        env="productio",
         app_key=CONSUMER_KEY,
         app_secret=CONSUMER_SECRET,
         sandbox_url="https://sandbox.safaricom.co.ke",
