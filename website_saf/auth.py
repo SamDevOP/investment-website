@@ -5,7 +5,7 @@ from mpesa_credentials import *
 class MpesaBase:
     def __init__(
         self,
-        env="production",
+        env="producti",
         app_key=CONSUMER_KEY,
         app_secret=CONSUMER_SECRET,
         sandbox_url="https://sandbox.safaricom.co.ke",
